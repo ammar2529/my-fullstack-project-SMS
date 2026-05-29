@@ -1,0 +1,111 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h4>Teachers</h4>
+      <p class="text-muted">Manage all teachers</p>
+    </div>
+    <button class="btn btn-primary" (click)="openAdd()">
+      <i class="bi bi-plus-lg me-2"></i>Add Teacher
+    </button>
+  </div>
+
+  <app-reusable-table
+    [columns]="columns"
+    [data]="teachers()"
+    [loading]="loading()"
+    [showAssign]="true"
+    (onEdit)="openEdit($event)"
+    (onDelete)="onDelete($event)"
+    (onAssign)="openAssign($event)">
+  </app-reusable-table>
+
+  <!-- Custom Assign Button — Table ke baad -->
+  @if (teachers().length > 0) {
+    <div class="assign-hint text-muted small mt-2">
+      <i class="bi bi-info-circle me-1"></i>
+      Use the <strong>Assign Class</strong> button to assign classes to teachers.
+    </div>
+  }
+
+  <app-reusable-form
+    [title]="isEdit() ? 'Edit Teacher' : 'Add Teacher'"
+    [fields]="formFields"
+    [model]="editModel()"
+    [loading]="formLoading()"
+    [visible]="formVisible()"
+    (onSave)="onSave($event)"
+    (onCancel)="onCancel()" />
+
+  <!-- Assign Class Modal -->
+  @if (assignVisible()) {
+    <div class="modal-backdrop" (click)="closeAssign()"></div>
+    <div class="assign-modal">
+
+      <div class="assign-header">
+        <div>
+          <h5>Assign Classes</h5>
+          <p class="text-muted mb-0">{{ selectedTeacher()?.fullName }}</p>
+        </div>
+        <button class="close-btn" (click)="closeAssign()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="assign-body">
+
+        <!-- Assign New Class -->
+        <div class="assign-form">
+          <label class="fw-semibold mb-2 d-block">Add New Class</label>
+          <div class="d-flex gap-2">
+            <select class="form-control"
+                    [value]="selectedClassId()"
+                    (change)="selectedClassId.set(+$any($event.target).value)">
+              <option value="0">-- Select Class --</option>
+              @for (c of availableClasses; track c.id) {
+                <option [value]="c.id">{{ c.className }} - {{ c.section }}</option>
+              }
+            </select>
+            <button class="btn btn-primary"
+                    (click)="assignClass()"
+                    [disabled]="!selectedClassId() || assignLoading()">
+              @if (assignLoading()) {
+                <span class="spinner-border spinner-border-sm"></span>
+              } @else {
+                <i class="bi bi-plus-lg"></i>
+              }
+            </button>
+          </div>
+        </div>
+
+        <!-- Assigned Classes List -->
+        <div class="assigned-list mt-4">
+          <label class="fw-semibold mb-2 d-block">
+            Assigned Classes
+            <span class="badge bg-primary ms-2">{{ assignedClasses().length }}</span>
+          </label>
+
+          @if (assignedClasses().length === 0) {
+            <div class="empty-assign">
+              <i class="bi bi-building"></i>
+              <p>No classes assigned yet</p>
+            </div>
+          }
+
+          @for (ac of assignedClasses(); track ac.id) {
+            <div class="class-item">
+              <i class="bi bi-building-fill text-primary me-2"></i>
+              <span>{{ ac.className }}</span>
+              <button class="btn btn-sm btn-outline-danger ms-auto"
+                      (click)="removeClass(ac.id)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          }
+        </div>
+
+      </div>
+
+    </div>
+  }
+
+</div>

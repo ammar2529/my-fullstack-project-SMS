@@ -1,0 +1,87 @@
+<div class="table-wrapper">
+
+  @if (searchable()) {
+    <div class="table-toolbar">
+      <app-search-bar
+        placeholder="Search..."
+        (onSearch)="searchQuery.set($event)" />
+      <span class="record-count">
+        {{ filteredData().length }} records
+      </span>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="loading-overlay">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  }
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>#</th>
+        @for (col of columns(); track col.key) {
+          <th>{{ col.label }}</th>
+        }
+        @if (showEdit() || showDelete()) {
+          <th class="text-center">Actions</th>
+        }
+      </tr>
+      </thead>
+      <tbody>
+        @if (filteredData().length === 0 && !loading()) {
+          <tr>
+            <td [colSpan]="columns().length + 2" class="text-center py-4 text-muted">
+              <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+              No records found
+            </td>
+          </tr>
+        }
+        @for (row of filteredData(); track $index) {
+          <tr>
+            <td class="text-muted">{{ $index + 1 }}</td>
+            @for (col of columns(); track col.key) {
+              <td>
+                @if (isArray(getValue(row, col.key))) {
+                  @if (getValue(row, col.key).length === 0) {
+                    <span class="text-muted small">None</span>
+                  }
+                  @for (item of getValue(row, col.key); track item) {
+                    <span class="badge bg-primary me-1 mb-1">{{ item }}</span>
+                  }
+                } @else {
+                  {{ getValue(row, col.key) }}
+                }
+              </td>
+            }
+            @if (showEdit() || showDelete() || showAssign()) {
+              <td class="text-center">
+                @if (showAssign()) {
+                  <button class="btn btn-sm btn-outline-success me-1"
+                          (click)="onAssign.emit(row)"
+                          title="Assign Class">
+                    <i class="bi bi-building"></i>
+                  </button>
+                }
+                @if (showEdit()) {
+                  <button class="btn btn-sm btn-outline-primary me-1"
+                          (click)="onEdit.emit(row)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                }
+                @if (showDelete()) {
+                  <button class="btn btn-sm btn-outline-danger"
+                          (click)="onDelete.emit(row)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

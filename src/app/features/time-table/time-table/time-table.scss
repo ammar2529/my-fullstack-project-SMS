@@ -1,0 +1,156 @@
+.timetable-page {
+
+  .page-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+
+    h4 { font-weight: 700; color: #1e3a5f; margin: 0; }
+
+    .header-actions {
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .view-toggle {
+      display: flex; background: #f0f2f5;
+      border-radius: 8px; padding: 3px; gap: 3px;
+
+      button {
+        padding: 6px 12px; border: none; border-radius: 6px;
+        background: transparent; color: #666; cursor: pointer;
+        font-size: 0.95rem; transition: all 0.2s;
+
+        &.active {
+          background: #fff; color: #1e3a5f;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+      }
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1e3a5f, #2980b9);
+      border: none; border-radius: 8px;
+      padding: 9px 20px; font-weight: 600;
+    }
+  }
+
+  .filter-bar {
+    background: #fff; border-radius: 12px;
+    padding: 16px 20px; margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex; gap: 16px; flex-wrap: wrap;
+
+    .filter-item {
+      display: flex; flex-direction: column; gap: 6px;
+      min-width: 220px;
+
+      label { font-size: 0.82rem; font-weight: 600; color: #555; }
+      .form-control { border-radius: 8px; font-size: 0.88rem; }
+    }
+  }
+
+  // Grid View
+  .timetable-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    overflow-x: auto;
+
+    @media (max-width: 1200px) { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 768px)  { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 480px)  { grid-template-columns: 1fr; }
+  }
+
+  .day-column {
+    display: flex; flex-direction: column;
+    min-width: 160px;
+
+    .day-header {
+      color: #fff; padding: 10px 14px;
+      border-radius: 10px 10px 0 0;
+      font-weight: 700; font-size: 0.88rem;
+      display: flex; align-items: center;
+      justify-content: space-between;
+
+      .slot-count {
+        background: rgba(255,255,255,0.25);
+        padding: 2px 8px; border-radius: 10px;
+        font-size: 0.72rem;
+      }
+    }
+
+    .day-slots {
+      background: #fff; border-radius: 0 0 10px 10px;
+      padding: 8px; min-height: 100px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: flex; flex-direction: column; gap: 8px;
+
+      .empty-slot {
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        padding: 20px; color: #ccc; font-size: 0.8rem;
+        i { font-size: 1.5rem; margin-bottom: 6px; }
+      }
+    }
+  }
+
+  .slot-card {
+    background: #f8fbff;
+    border-left: 3px solid #2980b9;
+    border-radius: 8px; padding: 10px;
+    position: relative; transition: all 0.2s;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateY(-1px);
+
+      .slot-actions { opacity: 1; }
+    }
+
+    .slot-time {
+      font-size: 0.72rem; color: #888;
+      margin-bottom: 4px;
+    }
+
+    .slot-subject {
+      font-size: 0.88rem; font-weight: 700;
+      color: #1e3a5f; margin-bottom: 4px;
+    }
+
+    .slot-info {
+      display: flex; flex-direction: column; gap: 3px;
+
+      .teacher {
+        font-size: 0.75rem; color: #666;
+      }
+
+      .class-badge {
+        font-size: 0.7rem; color: #2980b9;
+        background: #e8f4fd; padding: 1px 6px;
+        border-radius: 10px; width: fit-content;
+      }
+    }
+
+    .slot-actions {
+      position: absolute; top: 6px; right: 6px;
+      display: flex; gap: 4px;
+      opacity: 0; transition: opacity 0.2s;
+
+      button {
+        width: 24px; height: 24px; border: none;
+        border-radius: 4px; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.72rem; transition: all 0.2s;
+
+        &:first-child {
+          background: #e8f4fd; color: #2980b9;
+          &:hover { background: #2980b9; color: #fff; }
+        }
+        &:last-child {
+          background: #fef5f5; color: #e74c3c;
+          &:hover { background: #e74c3c; color: #fff; }
+        }
+      }
+    }
+  }
+}

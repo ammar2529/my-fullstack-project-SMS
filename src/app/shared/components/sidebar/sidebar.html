@@ -1,0 +1,26 @@
+<aside class="sidebar"
+       [class.collapsed]="collapsed()"
+       [class.mobile-open]="mobileOpen()">
+
+  <div class="sidebar-logo">
+    <i class="bi bi-mortarboard-fill"></i>
+    @if (!collapsed()) {
+      <span>SchoolMS</span>
+    }
+  </div>
+
+  <nav class="sidebar-nav">
+    @for (item of menuItems; track item.route) {
+      <a [routerLink]="item.route"
+         routerLinkActive="active"
+         class="nav-item"
+         [title]="item.label"
+         (click)="onNavClick()">
+        <i class="bi {{ item.icon }}"></i>
+        @if (!collapsed()) {
+          <span>{{ item.label }}</span>
+        }
+      </a>
+    }
+  </nav>
+</aside>

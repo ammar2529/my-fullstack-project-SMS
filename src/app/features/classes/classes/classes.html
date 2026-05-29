@@ -1,0 +1,27 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h4>Classes</h4>
+      <p class="text-muted">Manage all classes</p>
+    </div>
+    <button class="btn btn-primary" (click)="openAdd()">
+      <i class="bi bi-plus-lg me-2"></i>Add Class
+    </button>
+  </div>
+
+  <app-reusable-table
+    [columns]="columns"
+    [data]="classes()"
+    [loading]="loading()"
+    (onEdit)="openEdit($event)"
+    (onDelete)="onDelete($event)" />
+
+  <app-reusable-form
+    [title]="isEdit() ? 'Edit Class' : 'Add Class'"
+    [fields]="formFields"
+    [model]="editModel()"
+    [loading]="formLoading()"
+    [visible]="formVisible()"
+    (onSave)="onSave($event)"
+    (onCancel)="onCancel()" />
+</div>

@@ -1,0 +1,150 @@
+<div class="fee-payment-page">
+  <div class="page-header mb-4">
+    <div>
+      <h4>Bulk Fee Collection Engine</h4>
+      <p class="text-muted">Class-wise multi-student sheet management pipeline</p>
+    </div>
+  </div>
+
+  <div class="filter-card">
+    <div class="filter-row">
+      <div class="filter-item">
+        <label>Select Class</label>
+        <select class="form-select" [value]="selectedClassId()" (change)="onFilterChange('class', $any($event.target).value)">
+          <option value="">-- Choose Class --</option>
+          @for (c of classes(); track c.id) {
+            <option [value]="c.id">{{ c.className }} - {{ c.section }}</option>
+          }
+        </select>
+      </div>
+      <div class="filter-item">
+        <label>Fee Month</label>
+        <select class="form-select" [value]="selectedMonth()" (change)="onFilterChange('month', $any($event.target).value)">
+          @for (m of months; track m) {
+            <option [value]="m">{{ m }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center my-5 py-5">
+      <div class="spinner-border text-primary fs-4" role="status" style="width: 3rem; height: 3rem; color: #2980b9 !important;"></div>
+      <p class="text-muted mt-2 fw-semibold">Loading student subscription matrix...</p>
+    </div>
+  }
+
+  @if (!loading() && rows().length > 0) {
+    <div class="stats-row mb-4">
+      <div class="stat-card total">
+        <i class="bi bi-people-fill"></i>
+        <div>
+          <h3>{{ totalStudents() }}</h3>
+          <p>Total Students</p>
+        </div>
+      </div>
+      <div class="stat-card paid">
+        <i class="bi bi-check-circle-fill"></i>
+        <div>
+          <h3>{{ paidCount() }}</h3>
+          <p>Fully Paid</p>
+        </div>
+      </div>
+      <div class="stat-card pending">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <div>
+          <h3>{{ pendingCount() }}</h3>
+          <p>Pending</p>
+        </div>
+      </div>
+      <div class="stat-card unpaid">
+        <i class="bi bi-x-circle-fill"></i>
+        <div>
+          <h3>{{ unpaidCount() }}</h3>
+          <p>Unpaid</p>
+        </div>
+      </div>
+      <div class="stat-card collection">
+        <i class="bi bi-cash-stack"></i>
+        <div>
+          <h3>Rs. {{ totalCollected() | number }}</h3>
+          <p>Total Collected</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mark-all-bar">
+      <span class="text-muted me-3 fw-semibold ps-1">Bulk Action Controls:</span>
+      <button class="btn btn-success btn-sm me-2" (click)="markAll('Paid')">
+        <i class="bi bi-check2-all me-1"></i>Mark All Fully Paid
+      </button>
+      <button class="btn btn-danger btn-sm" (click)="markAll('Unpaid')">
+        <i class="bi bi-trash me-1"></i>Reset All Unpaid
+      </button>
+    </div>
+
+    <div class="fee-table-container">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+        <tr>
+          <th width="5%">#</th>
+          <th width="12%">Roll No</th>
+          <th width="23%">Student Name</th>
+          <th width="15%">Base Fee</th>
+          <th width="15%">Collected Amount</th>
+          <th width="15%">Method</th>
+          <th width="15%" class="text-center">Status Indicator</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.studentId; let i = $index) {
+            <tr [class.paid-row]="row.status === 'Paid'"
+                [class.pending-row]="row.status === 'Pending'"
+                [class.unpaid-row]="row.status === 'Unpaid'">
+              <td class="text-muted font-monospace ps-3">{{ i + 1 }}</td>
+              <td><span class="badge bg-secondary" style="background-color: #6c757d !important; border-radius: 6px;">{{ row.rollNo }}</span></td>
+              <td class="fw-semibold" style="color: #1e3a5f;">{{ row.fullName }}</td>
+              <td><span class="text-muted fw-semibold">{{ row.totalAmount | currency:'PKR':'symbol':'1.0-0' }}</span></td>
+              <td>
+                <input type="number"
+                       [value]="row.amountPaid"
+                       [max]="row.totalAmount"
+                       class="form-control form-control-sm input-collect text-end fw-bold"
+                       (input)="onAmountChange(row, $event)"
+                       placeholder="0" />
+              </td>
+              <td>
+                <select [(ngModel)]="row.paymentMethod" class="form-select form-select-sm select-method">
+                  <option value="Cash">Cash</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="Cheque">Cheque</option>
+                </select>
+              </td>
+              <td class="text-center">
+                @if (row.status === 'Paid') {
+                  <span class="status-badge bg-paid"><i class="bi bi-shield-check"></i>Paid</span>
+                } @else if (row.status === 'Pending') {
+                  <span class="status-badge bg-pending"><i class="bi bi-clock"></i>Pending</span>
+                } @else {
+                  <span class="status-badge bg-unpaid"><i class="bi bi-x-circle"></i>Unpaid</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="save-bar">
+      <button class="btn btn-primary btn-lg" (click)="saveBulkFees()" [disabled]="saving()">
+        @if (saving()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+        <i class="bi bi-save me-2"></i>{{ saving() ? 'Saving Changes...' : 'Save Collection Sheet' }}
+      </button>
+    </div>
+  } @else if (!loading() && selectedClassId() && selectedMonth()) {
+    <div class="alert alert-info text-center shadow-sm" role="alert" style="border-radius: 14px;">
+      <i class="bi bi-info-circle-fill me-2 fs-5"></i> No active students or outstanding configuration records found for the selected criteria.
+    </div>
+  }
+</div>

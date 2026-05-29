@@ -1,0 +1,239 @@
+<div class="library-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h4>Library</h4>
+      <p class="text-muted">Manage books and issue records</p>
+    </div>
+    <div class="header-actions">
+      @if (activeTab() === 'books') {
+        <button class="btn btn-primary" (click)="openAddBook()">
+          <i class="bi bi-plus-lg me-2"></i>Add Book
+        </button>
+      } @else {
+        <button class="btn btn-primary" (click)="openIssueForm()">
+          <i class="bi bi-book me-2"></i>Issue Book
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="lib-stats">
+    <div class="lib-stat blue">
+      <i class="bi bi-book-fill"></i>
+      <div>
+        <h3>{{ totalBooks() }}</h3>
+        <p>Total Books</p>
+      </div>
+    </div>
+    <div class="lib-stat orange">
+      <i class="bi bi-bookmark-fill"></i>
+      <div>
+        <h3>{{ totalIssued() }}</h3>
+        <p>Currently Issued</p>
+      </div>
+    </div>
+    <div class="lib-stat red">
+      <i class="bi bi-exclamation-circle-fill"></i>
+      <div>
+        <h3>{{ totalOverdue() }}</h3>
+        <p>Overdue</p>
+      </div>
+    </div>
+    <div class="lib-stat green">
+      <i class="bi bi-check-circle-fill"></i>
+      <div>
+        <h3>{{ totalReturned() }}</h3>
+        <p>Returned</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar mb-4">
+    <button class="tab-btn" [class.active]="activeTab() === 'books'"
+            (click)="activeTab.set('books')">
+      <i class="bi bi-book me-2"></i>Books
+    </button>
+    <button class="tab-btn" [class.active]="activeTab() === 'issues'"
+            (click)="activeTab.set('issues')">
+      <i class="bi bi-bookmark me-2"></i>Issue Records
+    </button>
+  </div>
+
+  <!-- Books Tab -->
+  @if (activeTab() === 'books') {
+    <app-reusable-table
+      [columns]="bookColumns"
+      [data]="books()"
+      [loading]="booksLoading()"
+      (onEdit)="openEditBook($event)"
+      (onDelete)="onDeleteBook($event)" />
+  }
+
+  <!-- Issues Tab -->
+  @if (activeTab() === 'issues') {
+    <div class="issues-table">
+      @if (issuesLoading()) {
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary"></div>
+        </div>
+      } @else {
+        <div class="table-wrapper">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+              <tr>
+                <th>#</th>
+                <th>Student</th>
+                <th>Book</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Fine</th>
+                <th class="text-center">Action</th>
+              </tr>
+              </thead>
+              <tbody>
+                @if (issues().length === 0) {
+                  <tr>
+                    <td colspan="8" class="text-center py-4 text-muted">
+                      <i class="bi bi-inbox fs-2 d-block mb-2"></i>No records
+                    </td>
+                  </tr>
+                }
+                @for (issue of issues(); track issue.id; let i = $index) {
+                  <tr [class.overdue-row]="issue.isOverdue">
+                    <td class="text-muted">{{ i + 1 }}</td>
+                    <td>
+                      <div class="student-cell">
+                        <span class="fw-semibold">{{ issue.studentName }}</span>
+                        <span class="text-muted small">{{ issue.rollNo }}</span>
+                      </div>
+                    </td>
+                    <td class="fw-semibold">{{ issue.bookTitle }}</td>
+                    <td>{{ issue.issueDate | date:'dd MMM yyyy' }}</td>
+                    <td [class.text-danger]="issue.isOverdue">
+                      {{ issue.dueDate | date:'dd MMM yyyy' }}
+                      @if (issue.isOverdue) {
+                        <span class="overdue-badge">Overdue</span>
+                      }
+                    </td>
+                    <td>
+                      <span class="status-badge"
+                            [class.issued]="issue.status === 'Issued'"
+                            [class.returned]="issue.status === 'Returned'">
+                        {{ issue.status }}
+                      </span>
+                    </td>
+                    <td>
+                      @if (issue.fine > 0) {
+                        <span class="text-danger fw-semibold">Rs {{ issue.fine }}</span>
+                      } @else {
+                        <span class="text-muted">—</span>
+                      }
+                    </td>
+                    <td class="text-center">
+                      @if (issue.status === 'Issued') {
+                        <button class="btn btn-sm btn-success"
+                                (click)="onReturnBook(issue)">
+                          <i class="bi bi-arrow-return-left me-1"></i>Return
+                        </button>
+                      } @else {
+                        <span class="text-success small">
+                          <i class="bi bi-check-circle me-1"></i>Returned
+                        </span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Book Form Modal -->
+  <app-reusable-form
+    [title]="isBookEdit() ? 'Edit Book' : 'Add Book'"
+    [fields]="bookFormFields"
+    [model]="bookEdit()"
+    [loading]="bookSaving()"
+    [visible]="bookForm()"
+    (onSave)="onSaveBook($event)"
+    (onCancel)="bookForm.set(false)"
+
+  />
+
+  <!-- Issue Book Modal -->
+  @if (issueForm()) {
+    <div class="modal-backdrop" (click)="issueForm.set(false)"></div>
+    <div class="issue-modal">
+
+      <div class="modal-header">
+        <h5>Issue Book</h5>
+        <button class="close-btn" (click)="issueForm.set(false)">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">
+            Select Book <span class="text-danger">*</span>
+          </label>
+          <select class="form-control"
+                  [value]="issueBookId()"
+                  (change)="issueBookId.set(+$any($event.target).value)">
+            <option value="0">-- Select Book --</option>
+            @for (b of availableBooks; track b.id) {
+              <option [value]="b.id">
+                {{ b.title }} ({{ b.available }} available)
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">
+            Select Student <span class="text-danger">*</span>
+          </label>
+          <select class="form-control"
+                  [value]="issueStudentId()"
+                  (change)="issueStudentId.set(+$any($event.target).value)">
+            <option value="0">-- Select Student --</option>
+            @for (s of students(); track s.id) {
+              <option [value]="s.id">
+                {{ s.rollNo }} - {{ s.fullName }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Due Days</label>
+          <input type="number" class="form-control"
+                 [value]="issueDueDays()"
+                 (input)="issueDueDays.set(+$any($event.target).value)"
+                 min="1" max="60" />
+          <small class="text-muted">
+            Due date: {{ issueDueDays() }} days from today
+          </small>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-light" (click)="issueForm.set(false)">Cancel</button>
+        <button class="btn btn-primary" (click)="onIssueBook()" [disabled]="issueSaving()">
+          @if (issueSaving()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+          <i class="bi bi-book me-2"></i>Issue Book
+        </button>
+      </div>
+    </div>
+  }
+
+</div>

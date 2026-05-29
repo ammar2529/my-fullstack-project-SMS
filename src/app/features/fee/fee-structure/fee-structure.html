@@ -1,0 +1,27 @@
+<div class="fee-structure-page">
+  <div class="page-header">
+    <div>
+      <h4>Fee Configuration</h4>
+      <p class="text-muted">Manage class-wise structural templates and fees</p>
+    </div>
+    <button class="btn btn-primary" (click)="openAdd()">
+      <i class="bi bi-plus-lg me-2"></i>Add Fee Template
+    </button>
+  </div>
+
+  <app-reusable-table
+    [columns]="columns"
+    [data]="feeStructures()"
+    [loading]="loading()"
+    (onEdit)="openEdit($event)"
+    (onDelete)="onDelete($event)" />
+
+  <app-reusable-form
+    [title]="isEdit() ? 'Edit Fee Template' : 'Configure New Fee Type'"
+    [fields]="formFields"
+    [model]="editModel()"
+    [loading]="formLoading()"
+    [visible]="formVisible()"
+    (onSave)="onSave($event)"
+    (onCancel)="onCancel()" />
+</div>

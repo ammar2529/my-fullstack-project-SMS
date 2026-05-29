@@ -1,1 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, and also import other style files */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f0f2f5;
+  overflow-x: hidden;
+}
+
+// Scrollbar
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f0f2f5; }
+::-webkit-scrollbar-thumb { background: #c0c0c0; border-radius: 3px; }
+
+// Responsive Table
+.table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+// Mobile utilities
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+}
+@media (min-width: 769px) {
+  .hide-desktop { display: none !important; }
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+// Jab developer tools open ho — scroll theek rahe
+* { box-sizing: border-box; }

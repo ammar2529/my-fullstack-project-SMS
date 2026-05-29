@@ -1,0 +1,112 @@
+<div class="timetable-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h4>Timetable</h4>
+      <p class="text-muted">Manage class schedules</p>
+    </div>
+    <div class="header-actions">
+      <!-- View Toggle -->
+      <div class="view-toggle">
+        <button [class.active]="viewMode() === 'grid'"
+                (click)="viewMode.set('grid')">
+          <i class="bi bi-grid-3x3-gap"></i>
+        </button>
+        <button [class.active]="viewMode() === 'table'"
+                (click)="viewMode.set('table')">
+          <i class="bi bi-list-ul"></i>
+        </button>
+      </div>
+      <button class="btn btn-primary" (click)="openAdd()">
+        <i class="bi bi-plus-lg me-2"></i>Add Slot
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-bar">
+    <div class="filter-item">
+      <label>Filter by Class</label>
+      <select class="form-control"
+              [value]="selectedClass()"
+              (change)="selectedClass.set(+$any($event.target).value)">
+        <option value="0">-- All Classes --</option>
+        @for (c of classes(); track c.id) {
+          <option [value]="c.id">{{ c.className }} - {{ c.section }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- GRID VIEW -->
+  @if (viewMode() === 'grid') {
+    <div class="timetable-grid">
+      @for (day of days; track day) {
+        <div class="day-column">
+          <div class="day-header" [style.background]="getDayColor(day)">
+            {{ day }}
+            <span class="slot-count">
+              {{ gridData()[day].length }} slots
+            </span>
+          </div>
+          <div class="day-slots">
+            @if (gridData()[day].length === 0) {
+              <div class="empty-slot">
+                <i class="bi bi-calendar-x"></i>
+                <span>No classes</span>
+              </div>
+            }
+            @for (slot of gridData()[day]; track slot.id) {
+              <div class="slot-card"
+                   [style.border-left-color]="getDayColor(day)">
+                <div class="slot-time">
+                  <i class="bi bi-clock me-1"></i>
+                  {{ slot.startTime }} - {{ slot.endTime }}
+                </div>
+                <div class="slot-subject">{{ slot.subjectName }}</div>
+                <div class="slot-info">
+                  <span class="teacher">
+                    <i class="bi bi-person me-1"></i>{{ slot.teacherName }}
+                  </span>
+                  @if (!selectedClass()) {
+                    <span class="class-badge">{{ slot.className }}</span>
+                  }
+                </div>
+                <div class="slot-actions">
+                  <button (click)="openEdit(slot)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button (click)="onDelete(slot)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- TABLE VIEW -->
+  @if (viewMode() === 'table') {
+    <app-reusable-table
+      [columns]="columns"
+      [data]="timetables()"
+      [loading]="loading()"
+      (onEdit)="openEdit($event)"
+      (onDelete)="onDelete($event)" />
+  }
+
+  <!-- Form -->
+  <app-reusable-form
+    [title]="isEdit() ? 'Edit Slot' : 'Add Time Slot'"
+    [fields]="formFields"
+    [model]="editModel()"
+    [loading]="formLoading()"
+    [visible]="formVisible()"
+    (onSave)="onSave($event)"
+    (onCancel)="onCancel()" />
+
+</div>

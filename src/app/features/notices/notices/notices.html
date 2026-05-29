@@ -1,0 +1,127 @@
+<div class="notices-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h4>Notices</h4>
+      <p class="text-muted">Manage school announcements</p>
+    </div>
+    <button class="btn btn-primary" (click)="openAdd()">
+      <i class="bi bi-plus-lg me-2"></i>Add Notice
+    </button>
+  </div>
+
+  <!-- Search + Stats -->
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="bi bi-search"></i>
+      <input type="text" placeholder="Search notices..."
+             [value]="searchQuery()"
+             (input)="searchQuery.set($any($event.target).value)" />
+      @if (searchQuery()) {
+        <button (click)="searchQuery.set('')">
+          <i class="bi bi-x"></i>
+        </button>
+      }
+    </div>
+    <span class="count-badge">
+      {{ filteredNotices().length }} notices
+    </span>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  }
+
+  <!-- Notices Grid -->
+  @if (!loading()) {
+    @if (filteredNotices().length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-megaphone"></i>
+        <p>No notices found</p>
+      </div>
+    } @else {
+      <div class="notices-grid">
+        @for (notice of filteredNotices(); track notice.id) {
+          <div class="notice-card">
+            <div class="notice-header">
+              <div class="notice-icon">
+                {{ getInitials(notice.title) }}
+              </div>
+              <div class="notice-meta">
+                <h6>{{ notice.title }}</h6>
+                <span class="date">
+                  <i class="bi bi-calendar3 me-1"></i>
+                  {{ formatDate(notice.noticeDate) }}
+                </span>
+              </div>
+              <div class="notice-actions">
+                <button class="action-btn edit" (click)="openEdit(notice)"
+                        title="Edit">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="action-btn delete" (click)="onDelete(notice)"
+                        title="Delete">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="notice-body">
+              <p>{{ notice.description }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- Form Modal -->
+  @if (formVisible()) {
+    <div class="modal-backdrop" (click)="onCancel()"></div>
+    <div class="notice-modal">
+
+      <div class="modal-header">
+        <h5>{{ isEdit() ? 'Edit Notice' : 'Add Notice' }}</h5>
+        <button class="close-btn" (click)="onCancel()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group mb-3">
+          <label class="form-label fw-semibold">
+            Title <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control"
+                 placeholder="Enter notice title"
+                 [value]="formTitle()"
+                 (input)="formTitle.set($any($event.target).value)" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label fw-semibold">Description</label>
+          <textarea class="form-control" rows="5"
+                    placeholder="Enter notice description..."
+                    [value]="formDescription()"
+                    (input)="formDescription.set($any($event.target).value)">
+          </textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-light" (click)="onCancel()">Cancel</button>
+        <button class="btn btn-primary" (click)="onSave()" [disabled]="formLoading()">
+          @if (formLoading()) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          {{ formLoading() ? 'Saving...' : 'Save Notice' }}
+        </button>
+      </div>
+
+    </div>
+  }
+
+</div>

@@ -1,0 +1,43 @@
+<header class="navbar-top">
+
+  <!-- Mobile Menu Button -->
+  <button class="toggle-btn hide-desktop" (click)="onMobileToggle()">
+    <i class="bi bi-list"></i>
+  </button>
+
+  <!-- Desktop Toggle -->
+  <button class="toggle-btn hide-mobile" (click)="onToggle()">
+    <i class="bi bi-list"></i>
+  </button>
+
+  <div class="page-title hide-mobile">
+    <h5>School Management System</h5>
+  </div>
+
+  <div class="navbar-right">
+    <button class="icon-btn">
+      <i class="bi bi-bell-fill"></i>
+      <span class="badge">3</span>
+    </button>
+
+    <div class="user-dropdown dropdown">
+      <button class="user-btn dropdown-toggle" data-bs-toggle="dropdown">
+        <div class="avatar">{{ fullName.charAt(0) }}</div>
+        <div class="user-info hide-mobile">
+          <span class="name">{{ fullName }}</span>
+          <span class="role">{{ role }}</span>
+        </div>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
+        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+          <button class="dropdown-item text-danger" (click)="logout()">
+            <i class="bi bi-box-arrow-right me-2"></i>Logout
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>

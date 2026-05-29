@@ -1,0 +1,24 @@
+.page {
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    h4 { font-weight: 700; color: #1e3a5f; margin: 0; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1e3a5f, #2980b9);
+      border: none; border-radius: 8px;
+      padding: 9px 20px; font-weight: 600;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 576px) {
+      h4 { font-size: 1.1rem; }
+      .btn-primary { padding: 8px 14px; font-size: 0.85rem; }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+<div class="app-layout" [class.sidebar-collapsed]="sidebarCollapsed()">
+
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay"
+       [class.active]="mobileOpen()"
+       (click)="closeMobile()">
+  </div>
+
+  <app-sidebar
+    [collapsed]="sidebarCollapsed()"
+    [mobileOpen]="mobileOpen()"
+    (closeMenu)="closeMobile()" />
+
+  <div class="main-area">
+    <app-navbar
+      (toggleSidebar)="toggleSidebar()"
+      (toggleMobile)="toggleMobile()" />
+    <main class="content-area">
+      <router-outlet />
+    </main>
+  </div>
+</div>
+
+<app-toast />

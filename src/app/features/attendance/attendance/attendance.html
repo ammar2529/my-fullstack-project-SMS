@@ -1,0 +1,189 @@
+<div class="attendance-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h4>Attendance</h4>
+      <p class="text-muted">
+        @if (isAdmin()) { Viewing all classes attendance }
+        @else { Viewing your class attendance }
+      </p>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-card">
+    <div class="filter-row">
+
+      <!-- Class Filter — Admin only -->
+      @if (isAdmin()) {
+        <div class="filter-item">
+          <label>Filter by Class</label>
+          <select class="form-control"
+                  [value]="selectedClass()"
+                  (change)="selectedClass.set(+$any($event.target).value)">
+            <option value="0">-- All Classes --</option>
+            @for (c of classes(); track c.id) {
+              <option [value]="c.id">{{ c.className }} - {{ c.section }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <!-- Teacher — Class info only show -->
+      @if (isTeacher()) {
+        <div class="filter-item">
+          <label>Your Class</label>
+          <select class="form-control"
+                  [value]="selectedClass()"
+                  (change)="selectedClass.set(+$any($event.target).value)">
+            @for (c of classes(); track c.id) {
+              <option [value]="c.id">{{ c.className }} - {{ c.section }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <div class="filter-item">
+        <label>Date</label>
+        <input type="date" class="form-control"
+               [value]="selectedDate()"
+               (change)="selectedDate.set($any($event.target).value)" />
+      </div>
+
+      <div class="filter-item align-self-end">
+        <button class="btn btn-primary" (click)="loadAttendance()" [disabled]="loading()">
+          @if (loading()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+          <i class="bi bi-search me-1"></i> Load
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  @if (rows().length > 0) {
+    <div class="stats-row">
+      <div class="stat-card total">
+        <i class="bi bi-people-fill"></i>
+        <div>
+          <h3>{{ totalCount() }}</h3>
+          <p>Total Students</p>
+        </div>
+      </div>
+      <div class="stat-card present">
+        <i class="bi bi-check-circle-fill"></i>
+        <div>
+          <h3>{{ presentCount() }}</h3>
+          <p>Present</p>
+        </div>
+      </div>
+      <div class="stat-card absent">
+        <i class="bi bi-x-circle-fill"></i>
+        <div>
+          <h3>{{ absentCount() }}</h3>
+          <p>Absent</p>
+        </div>
+      </div>
+      <div class="stat-card leave">
+        <i class="bi bi-dash-circle-fill"></i>
+        <div>
+          <h3>{{ leaveCount() }}</h3>
+          <p>Leave</p>
+        </div>
+      </div>
+      <div class="stat-card percentage">
+        <i class="bi bi-graph-up"></i>
+        <div>
+          <h3>{{ totalCount() > 0 ? ((presentCount() / totalCount()) * 100).toFixed(1) : 0 }}%</h3>
+          <p>Attendance</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mark All -->
+    <div class="mark-all-bar">
+      <span class="text-muted me-3">Mark All as:</span>
+      <button class="btn btn-success btn-sm me-2" (click)="markAll('Present')">
+        <i class="bi bi-check-lg me-1"></i>Present
+      </button>
+      <button class="btn btn-danger btn-sm me-2" (click)="markAll('Absent')">
+        <i class="bi bi-x-lg me-1"></i>Absent
+      </button>
+      <button class="btn btn-warning btn-sm" (click)="markAll('Leave')">
+        <i class="bi bi-dash-lg me-1"></i>Leave
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="attendance-table">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Roll No</th>
+          <th>Student Name</th>
+          @if (isAdmin()) { <th>Class</th> }
+          <th class="text-center">Present</th>
+          <th class="text-center">Absent</th>
+          <th class="text-center">Leave</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.studentId; let i = $index) {
+            <tr [class.present-row]="row.status === 'Present'"
+                [class.absent-row]="row.status === 'Absent'"
+                [class.leave-row]="row.status === 'Leave'">
+              <td class="text-muted">{{ i + 1 }}</td>
+              <td><span class="badge bg-secondary">{{ row.rollNo }}</span></td>
+              <td class="fw-semibold">{{ row.fullName }}</td>
+              @if (isAdmin()) {
+                <td>
+                  <span class="class-badge">
+                    {{ classes() | classname: row.classId }}
+                  </span>
+                </td>
+              }
+              <td class="text-center">
+                <button class="status-btn present"
+                        [class.active]="row.status === 'Present'"
+                        (click)="setStatus(row, 'Present')">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+              </td>
+              <td class="text-center">
+                <button class="status-btn absent"
+                        [class.active]="row.status === 'Absent'"
+                        (click)="setStatus(row, 'Absent')">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </td>
+              <td class="text-center">
+                <button class="status-btn leave"
+                        [class.active]="row.status === 'Leave'"
+                        (click)="setStatus(row, 'Leave')">
+                  <i class="bi bi-dash-lg"></i>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Save -->
+    <div class="save-bar">
+      <button class="btn btn-primary btn-lg" (click)="saveAttendance()" [disabled]="saving()">
+        @if (saving()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+        <i class="bi bi-save me-2"></i>{{ saving() ? 'Saving...' : 'Save Attendance' }}
+      </button>
+    </div>
+  }
+
+  @if (rows().length === 0 && !loading()) {
+    <div class="empty-state">
+      <i class="bi bi-calendar-check"></i>
+      <p>Select a date and click Load to view attendance</p>
+    </div>
+  }
+
+</div>

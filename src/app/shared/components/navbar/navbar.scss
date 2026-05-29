@@ -1,0 +1,67 @@
+.navbar-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+  height: 64px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+
+  .toggle-btn {
+    background: none; border: none;
+    font-size: 1.4rem; color: #555;
+    cursor: pointer; padding: 4px 8px;
+    border-radius: 6px; flex-shrink: 0;
+    &:hover { background: #f0f2f5; }
+  }
+
+  .page-title h5 {
+    margin: 0; font-weight: 600;
+    color: #1e3a5f; white-space: nowrap;
+  }
+
+  .navbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .icon-btn {
+      position: relative; background: none;
+      border: none; font-size: 1.2rem; color: #555;
+      cursor: pointer; padding: 8px; border-radius: 50%;
+      &:hover { background: #f0f2f5; }
+      .badge {
+        position: absolute; top: 4px; right: 4px;
+        background: #e74c3c; color: #fff;
+        font-size: 0.6rem; width: 16px; height: 16px;
+        border-radius: 50%; display: flex;
+        align-items: center; justify-content: center;
+      }
+    }
+
+    .user-btn {
+      display: flex; align-items: center; gap: 8px;
+      background: none; border: 1px solid #e0e0e0;
+      border-radius: 10px; padding: 6px 10px; cursor: pointer;
+      &:hover { background: #f0f2f5; }
+
+      .avatar {
+        width: 34px; height: 34px; border-radius: 50%;
+        background: linear-gradient(135deg, #1e3a5f, #2980b9);
+        color: #fff; display: flex; align-items: center;
+        justify-content: center; font-weight: 700;
+        font-size: 0.9rem; flex-shrink: 0;
+      }
+
+      .user-info {
+        display: flex; flex-direction: column; text-align: left;
+        .name { font-size: 0.85rem; font-weight: 600; color: #333; line-height: 1.2; }
+        .role { font-size: 0.72rem; color: #888; }
+      }
+    }
+  }
+}

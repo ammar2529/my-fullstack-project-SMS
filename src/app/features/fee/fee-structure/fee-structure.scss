@@ -1,0 +1,22 @@
+.fee-structure-page {
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+
+    h4 {
+      font-weight: 700;
+      color: #1e3a5f;
+      margin: 0;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1e3a5f, #2980b9);
+      border: none;
+      border-radius: 8px;
+      padding: 9px 20px;
+      font-weight: 600;
+    }
+  }
+}

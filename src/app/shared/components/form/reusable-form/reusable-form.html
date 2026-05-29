@@ -1,0 +1,71 @@
+@if (visible()) {
+  <div class="modal-backdrop" (click)="cancel()"></div>
+
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h5>{{ title() }}</h5>
+      <button class="close-btn" (click)="cancel()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-grid">
+        @for (field of fields(); track field.key) {
+          <div class="form-group"
+               [class.full-width]="field.type === 'textarea'">
+            <label>
+              {{ field.label }}
+              @if (field.required) { <span class="text-danger">*</span> }
+            </label>
+
+            @if (field.type === 'select') {
+              <select class="form-control"
+                      [(ngModel)]="formData[field.key]"
+                      [name]="field.key">
+                <option value="">-- Select --</option>
+                @for (opt of field.options; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            } @else if (field.type === 'textarea') {
+              <textarea class="form-control"
+                        [(ngModel)]="formData[field.key]"
+                        [name]="field.key"
+                        rows="3"
+                        [placeholder]="field.placeholder || ''">
+              </textarea>
+            }@else if (field.type === 'time') {
+              <input
+                class="form-control"
+                type="time"
+                [(ngModel)]="formData[field.key]"
+                [name]="field.key"
+                [required]="field.required || false" />}
+            @else {
+              <input
+                class="form-control"
+                [type]="field.type"
+                [(ngModel)]="formData[field.key]"
+                [name]="field.key"
+                [placeholder]="field.placeholder || ''"
+                [required]="field.required || false" />
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-light" (click)="cancel()">
+        Cancel
+      </button>
+      <button class="btn btn-primary" (click)="save()" [disabled]="loading()">
+        @if (loading()) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+        }
+        {{ loading() ? 'Saving...' : 'Save' }}
+      </button>
+    </div>
+  </div>
+}

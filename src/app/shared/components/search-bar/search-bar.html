@@ -1,0 +1,14 @@
+<div class="search-bar">
+  <i class="bi bi-search"></i>
+  <input
+    type="text"
+    [placeholder]="placeholder()"
+    [value]="value()"
+    (input)="onInput($any($event.target).value)"
+    class="search-input" />
+  @if (value()) {
+    <button class="clear-btn" (click)="clear()">
+      <i class="bi bi-x"></i>
+    </button>
+  }
+</div>

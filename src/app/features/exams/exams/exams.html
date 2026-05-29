@@ -1,0 +1,396 @@
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h4>Exams & Results</h4>
+      <p class="text-muted">Manage exams, enter results and view report cards</p>
+    </div>
+    @if (activeTab() === 'exams') {
+      <button class="btn btn-primary" (click)="openAdd()">
+        <i class="bi bi-plus-lg me-2"></i>Add Exam
+      </button>
+    }
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar mb-4">
+    <button class="tab-btn" [class.active]="activeTab() === 'exams'"
+            (click)="switchTab('exams')">
+      <i class="bi bi-pencil-square me-2"></i>Exams
+    </button>
+    <button class="tab-btn" [class.active]="activeTab() === 'results'"
+            (click)="switchTab('results')">
+      <i class="bi bi-list-check me-2"></i>Results List
+    </button>
+  </div>
+
+  <!-- EXAMS TAB -->
+  @if (activeTab() === 'exams') {
+    <app-reusable-table
+      [columns]="columns"
+      [data]="exams()"
+      [loading]="loading()"
+      [showAssign]="true"
+      (onEdit)="openEdit($event)"
+      (onDelete)="onDelete($event)"
+      (onAssign)="openEnterResults($event)">
+    </app-reusable-table>
+
+    <div class="text-muted small mt-2">
+      <i class="bi bi-info-circle me-1"></i>
+      Click <i class="bi bi-building text-success"></i> to enter results for an exam
+    </div>
+  }
+
+  <!-- RESULTS LIST TAB -->
+  @if (activeTab() === 'results') {
+
+    <!-- Filters -->
+    <div class="filter-card mb-3">
+      <div class="filter-row">
+        <div class="filter-item">
+          <label>Filter by Exam</label>
+          <select class="form-control"
+                  [value]="filterExamId()"
+                  (change)="filterExamId.set(+$any($event.target).value)">
+            <option value="0">-- All Exams --</option>
+            @for (e of exams(); track e.id) {
+              <option [value]="e.id">{{ e.examName }}</option>
+            }
+          </select>
+        </div>
+        <div class="filter-item">
+          <label>Filter by Class</label>
+          <select class="form-control"
+                  [value]="filterClassId()"
+                  (change)="filterClassId.set(+$any($event.target).value)">
+            <option value="0">-- All Classes --</option>
+            @for (c of classes(); track c.id) {
+              <option [value]="c.id">{{ c.className }} - {{ c.section }}</option>
+            }
+          </select>
+        </div>
+        <div class="filter-item">
+          <label>Search</label>
+          <input type="text" class="form-control"
+                 placeholder="Name, Roll No, Subject..."
+                 [value]="filterSearch()"
+                 (input)="filterSearch.set($any($event.target).value)" />
+        </div>
+        <div class="filter-item align-self-end">
+          <button class="btn btn-outline-secondary"
+                  (click)="filterExamId.set(0); filterClassId.set(0); filterSearch.set('')">
+            <i class="bi bi-x-lg me-1"></i>Clear
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Table -->
+    <div class="table-wrapper">
+      @if (resultsListLoading()) {
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary"></div>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Roll No</th>
+              <th>Student</th>
+              <th>Class</th>
+              <th>Exam</th>
+              <th>Subject</th>
+              <th>Obtained</th>
+              <th>Total</th>
+              <th class="text-center">Grade</th>
+              <th class="text-center">Report</th>
+            </tr>
+            </thead>
+            <tbody>
+              @if (filteredResults().length === 0) {
+                <tr>
+                  <td colspan="10" class="text-center py-4 text-muted">
+                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>No results found
+                  </td>
+                </tr>
+              }
+              @for (row of filteredResults(); track row.id; let i = $index) {
+                <tr>
+                  <td class="text-muted">{{ i + 1 }}</td>
+                  <td><span class="badge bg-secondary">{{ row.rollNo }}</span></td>
+                  <td class="fw-semibold">{{ row.studentName }}</td>
+                  <td>{{ row.className }}</td>
+                  <td>{{ row.examName }}</td>
+                  <td>{{ row.subjectName }}</td>
+                  <td>{{ row.obtainedMarks }}</td>
+                  <td>{{ row.totalMarks }}</td>
+                  <td class="text-center">
+                    <span class="grade-badge"
+                          [style.background]="getGradeColor(row.grade) + '20'"
+                          [style.color]="getGradeColor(row.grade)">
+                      {{ row.grade }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-outline-primary"
+                            (click)="viewReportCard(row)"
+                            title="View Report Card">
+                      <i class="bi bi-file-earmark-person"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Add/Edit Exam Form -->
+  <app-reusable-form
+    [title]="isEdit() ? 'Edit Exam' : 'Add Exam'"
+    [fields]="formFields"
+    [model]="editModel()"
+    [loading]="formLoading()"
+    [visible]="formVisible()"
+    (onSave)="onSave($event)"
+    (onCancel)="onCancel()" />
+
+  <!-- Enter Results Modal -->
+  @if (enterVisible()) {
+    <div class="modal-backdrop" (click)="closeEnter()"></div>
+    <div class="enter-modal">
+
+      <div class="modal-header-custom">
+        <div>
+          <h5>Enter Results — {{ selectedExam()?.examName }}</h5>
+          <p class="text-muted mb-0">Total Marks: {{ selectedExam()?.totalMarks }}</p>
+        </div>
+        <button class="close-btn" (click)="closeEnter()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="modal-filters">
+        <div class="d-flex gap-3 align-items-center">
+          <!-- Class Filter -->
+          <div>
+            <label class="small fw-semibold me-2">Class:</label>
+            <select class="form-control form-control-sm d-inline-block"
+                    style="width: 180px;"
+                    [value]="selectedClassId()"
+                    (change)="loadResultsGrid(+$any($event.target).value)">
+              <option value="0">-- Select Class --</option>
+              @for (c of classes(); track c.id) {
+                <option [value]="c.id">{{ c.className }} - {{ c.section }}</option>
+              }
+            </select>
+          </div>
+          <!-- Student Search -->
+          <div>
+            <input type="text" class="form-control form-control-s<m"
+                   placeholder="Search student / roll no..."
+                   style="width: 220px;"
+                   [value]="studentSearch()"
+                   (input)="studentSearch.set($any($event.target).value)" />
+          </div>
+          <span class="text-muted small">
+            {{ filteredStudents().length }} students
+          </span>
+        </div>
+      </div>
+
+      <div class="modal-body-custom">
+        @if (enterLoading()) {
+          <div class="text-center py-4">
+            <div class="spinner-border text-primary"></div>
+          </div>
+        } @else if (resultsGrid().length === 0) {
+          <div class="empty-state">
+            <i class="bi bi-people"></i>
+            <p>Select a class to load students</p>
+          </div>
+        } @else {
+          <div class="table-responsive">
+            <table class="table results-grid-table">
+              <thead>
+              <tr>
+                <th>#</th>
+                <th>Roll No</th>
+                <th>Student Name</th>
+                @for (sub of subjects(); track sub.id) {
+                  <th>
+                    {{ sub.subjectName }}
+                    <span class="total-badge">/ {{ sub.totalMarks }}</span>
+                  </th>
+                }
+                <th>Total</th>
+              </tr>
+              </thead>
+              <tbody>
+                @for (row of filteredStudents(); track row.studentId; let i = $index) {
+                  <tr>
+                    <td class="text-muted">{{ i + 1 }}</td>
+                    <td><span class="badge bg-secondary">{{ row.rollNo }}</span></td>
+                    <td class="fw-semibold">{{ row.fullName }}</td>
+                    @for (sub of subjects(); track sub.id) {
+                      <td>
+                        <input type="number"
+                               class="marks-input"
+                               [value]="row['sub_' + sub.id]"
+                               [max]="selectedExam()?.totalMarks"
+                               min="0"
+                               placeholder="0"
+                               (input)="updateMark(row.studentId, sub.id, $any($event.target).value)" />
+                      </td>
+                    }
+                    <td class="fw-bold text-primary">
+                      {{ getRowTotal(row) }} / {{ getRowTotalMax() }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer-custom">
+        <button class="btn btn-light me-2" (click)="closeEnter()">Cancel</button>
+        <button class="btn btn-primary" (click)="saveResults()" [disabled]="enterSaving()">
+          @if (enterSaving()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+          <i class="bi bi-save me-2"></i>Save Results
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Report Card Modal -->
+  @if (reportVisible()) {
+    <div class="modal-backdrop" (click)="closeReport()"></div>
+    <div class="report-modal" id="reportCard">
+
+      <div class="report-header">
+        <div class="school-info">
+          <i class="bi bi-mortarboard-fill"></i>
+          <div>
+            <h4>School Management System</h4>
+            <p>Result Card</p>
+          </div>
+        </div>
+        <div class="no-print d-flex gap-2">
+          <button class="btn btn-outline-primary btn-sm" (click)="printReport()">
+            <i class="bi bi-printer me-1"></i>Print
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" (click)="closeReport()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      @if (reportLoading()) {
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary"></div>
+        </div>
+      } @else if (reportData()) {
+        <div class="report-body">
+
+          <!-- Student Info -->
+          <div class="student-info-card">
+            <div class="info-row">
+              <div class="info-item">
+                <span class="label">Student Name</span>
+                <span class="value">{{ reportData().student.fullName }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Roll No</span>
+                <span class="value">{{ reportData().student.rollNo }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Class</span>
+                <span class="value">{{ reportData().student.className }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Exam</span>
+                <span class="value">{{ reportData().exam.examName }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results Table -->
+          <table class="table report-table">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Subject</th>
+              <th>Total Marks</th>
+              <th>Obtained</th>
+              <th>Percentage</th>
+              <th>Grade</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (r of reportData().results; track r.subjectId; let i = $index) {
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td class="fw-semibold">{{ r.subjectName }}</td>
+                  <td>{{ r.totalMarks }}</td>
+                  <td>{{ r.obtainedMarks }}</td>
+                  <td>{{ r.percentage }}%</td>
+                  <td>
+                    <span class="grade-badge"
+                          [style.background]="getGradeColor(r.grade) + '20'"
+                          [style.color]="getGradeColor(r.grade)">
+                      {{ r.grade }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+            <tr class="summary-row">
+              <td colspan="2" class="fw-bold">Total</td>
+              <td class="fw-bold">{{ reportData().summary.totalMarks }}</td>
+              <td class="fw-bold">{{ reportData().summary.totalObtained }}</td>
+              <td class="fw-bold">{{ reportData().summary.percentage }}%</td>
+              <td>
+                  <span class="grade-badge fw-bold"
+                        [style.background]="getGradeColor(reportData().summary.grade) + '20'"
+                        [style.color]="getGradeColor(reportData().summary.grade)">
+                    {{ reportData().summary.grade }}
+                  </span>
+              </td>
+            </tr>
+            </tfoot>
+          </table>
+
+          <!-- Summary -->
+          <div class="summary-cards">
+            <div class="sum-card">
+              <span class="sum-label">Total Obtained</span>
+              <span class="sum-value">{{ reportData().summary.totalObtained }} / {{ reportData().summary.totalMarks }}</span>
+            </div>
+            <div class="sum-card">
+              <span class="sum-label">Percentage</span>
+              <span class="sum-value">{{ reportData().summary.percentage }}%</span>
+            </div>
+            <div class="sum-card">
+              <span class="sum-label">Final Grade</span>
+              <span class="sum-value"
+                    [style.color]="getGradeColor(reportData().summary.grade)">
+                {{ reportData().summary.grade }}
+              </span>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+
+</div>

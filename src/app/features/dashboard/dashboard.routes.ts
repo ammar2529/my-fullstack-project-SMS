@@ -65,6 +65,10 @@ export const dashboardRoutes: Routes = [
         path: 'library',
         loadComponent: () => import('../library/library/library').then((m) => m.Library),
       },
+      {
+        path: 'transport',
+        loadComponent: () => import('../transport/transport/transport').then((m) => m.Transport),
+      },
     ],
   },
 ];

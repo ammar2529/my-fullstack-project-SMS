@@ -1,0 +1,130 @@
+.transport-page {
+
+  .page-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    h4 { font-weight: 700; color: #1e3a5f; margin: 0; }
+    .btn-primary {
+      background: linear-gradient(135deg, #1e3a5f, #2980b9);
+      border: none; border-radius: 8px;
+      padding: 9px 20px; font-weight: 600;
+    }
+  }
+
+  .transport-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 24px;
+
+    @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+
+    .t-stat {
+      background: #fff; border-radius: 14px;
+      padding: 16px 20px; display: flex;
+      align-items: center; gap: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-left: 4px solid transparent;
+
+      i  { font-size: 1.8rem; flex-shrink: 0; }
+      h3 { font-size: 1.4rem; font-weight: 700; margin: 0; color: #1e3a5f; }
+      p  { font-size: 0.78rem; color: #888; margin: 0; }
+
+      &.blue   { border-left-color: #2980b9; i { color: #2980b9; } }
+      &.green  { border-left-color: #27ae60; i { color: #27ae60; } }
+      &.orange { border-left-color: #e67e22; i { color: #e67e22; } }
+      &.purple { border-left-color: #8e44ad; i { color: #8e44ad; } }
+    }
+  }
+
+  .tabs-bar {
+    display: flex; gap: 4px;
+    background: #f0f2f5; padding: 4px;
+    border-radius: 10px; width: fit-content;
+
+    .tab-btn {
+      padding: 8px 20px; border: none; border-radius: 8px;
+      background: transparent; color: #666;
+      font-weight: 500; cursor: pointer;
+      transition: all 0.2s; font-size: 0.9rem;
+      &.active { background: #fff; color: #1e3a5f; font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    }
+  }
+
+  .table-wrapper {
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden;
+
+    .table {
+      margin: 0;
+      thead tr { background: #f8f9fa;
+        th { font-size: 0.8rem; font-weight: 700; color: #6c757d;
+          text-transform: uppercase; padding: 14px 16px; border: none; }
+      }
+      tbody tr {
+        border-bottom: 1px solid #f0f2f5; transition: background 0.15s;
+        &:hover { background: #f8fbff; }
+        td { padding: 12px 16px; font-size: 0.88rem; border: none; vertical-align: middle; }
+      }
+    }
+  }
+
+  .student-cell {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+
+  .route-badge {
+    background: #e8f4fd; color: #2980b9;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 0.8rem; font-weight: 600;
+  }
+}
+
+// Modals
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1040; backdrop-filter: blur(2px);
+}
+
+.assign-modal {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff; border-radius: 16px;
+  width: 90%; max-width: 480px;
+  max-height: 90vh; overflow-y: auto;
+  z-index: 1050;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+
+  @media (max-width: 576px) {
+    width: 100%; top: auto; bottom: 0; left: 0;
+    transform: none; border-radius: 16px 16px 0 0;
+  }
+
+  .modal-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px; border-bottom: 1px solid #f0f2f5;
+    h5 { margin: 0; font-weight: 700; color: #1e3a5f; }
+    .close-btn { background: none; border: none; color: #888;
+      cursor: pointer; padding: 4px 8px; border-radius: 6px;
+      &:hover { background: #f0f2f5; } }
+  }
+
+  .modal-body {
+    padding: 24px;
+    .form-control { border-radius: 8px; border: 1px solid #e0e0e0;
+      font-size: 0.88rem;
+      &:focus { border-color: #2980b9;
+        box-shadow: 0 0 0 3px rgba(41,128,185,0.12); } }
+  }
+
+  .modal-footer {
+    display: flex; justify-content: flex-end;
+    gap: 10px; padding: 16px 24px;
+    border-top: 1px solid #f0f2f5;
+    .btn { padding: 8px 24px; border-radius: 8px; font-weight: 600; }
+    .btn-primary { background: linear-gradient(135deg, #1e3a5f, #2980b9); border: none; }
+  }
+}

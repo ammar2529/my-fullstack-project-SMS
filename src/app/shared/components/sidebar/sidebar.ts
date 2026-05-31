@@ -67,6 +67,7 @@ export class Sidebar {
       route: '/datesheet',
       roles: ['Admin', 'Teacher', 'Student', 'Parent'],
     },
+    { label: 'Reports', icon: 'bi-bar-chart-fill', route: '/reports', roles: ['Admin', 'Teacher'] },
   ];
 
   // menuItems = computed(() =>
@@ -86,7 +87,7 @@ export class Sidebar {
         title: 'Academic',
         items: this.allMenuItems.filter(
           (i) =>
-            ['Students', 'Teachers', 'Classes', 'Subjects'].includes(i.label) &&
+            ['Students', 'Teachers', 'Classes', 'Subjects', 'Reports'].includes(i.label) &&
             i.roles.includes(role),
         ),
       },

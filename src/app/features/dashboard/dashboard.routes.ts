@@ -100,6 +100,14 @@ export const dashboardRoutes: Routes = [
         path: 'datesheet',
         loadComponent: () => import('../datesheet/datesheet/datesheet').then((m) => m.Datesheet),
       },
+      {
+        path: 'profile',
+        loadComponent: () => import('../profile/profile/profile').then((m) => m.Profile),
+      },
+      {
+        path: 'reports',
+        loadComponent: () => import('../report/report/report').then((m) => m.Report),
+      },
     ],
   },
 ];

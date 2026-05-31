@@ -1,0 +1,402 @@
+<div class="reports-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h4>Reports</h4>
+      <p class="text-muted">Generate and print school reports</p>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar mb-4">
+    <button class="tab-btn" [class.active]="activeTab() === 'students'"
+            (click)="activeTab.set('students'); loadStudentReport()">
+      <i class="bi bi-people me-2"></i>Students
+    </button>
+    <button class="tab-btn" [class.active]="activeTab() === 'attendance'"
+            (click)="activeTab.set('attendance'); loadAttendanceReport()">
+      <i class="bi bi-calendar-check me-2"></i>Attendance
+    </button>
+    <button class="tab-btn" [class.active]="activeTab() === 'results'"
+            (click)="activeTab.set('results'); loadResultsReport()">
+      <i class="bi bi-award me-2"></i>Results
+    </button>
+  </div>
+
+  <!-- ==================== STUDENTS REPORT ==================== -->
+  @if (activeTab() === 'students') {
+    <div class="filter-card">
+      <div class="filter-row">
+        <div class="filter-item">
+          <label>Class</label>
+          <select class="form-control"
+                  [value]="studentClassId()"
+                  (change)="studentClassId.set(+$any($event.target).value)">
+            <option value="0">-- All Classes --</option>
+            @for (c of classes(); track c.id) {
+              <option [value]="c.id">{{ c.className }} - {{ c.section }}</option>
+            }
+          </select>
+        </div>
+        <div class="filter-item">
+          <label>Search</label>
+          <input type="text" class="form-control"
+                 placeholder="Name or Roll No..."
+                 [value]="studentSearch()"
+                 (input)="studentSearch.set($any($event.target).value)" />
+        </div>
+        <div class="filter-item align-self-end">
+          <button class="btn btn-primary" (click)="loadStudentReport()">
+            <i class="bi bi-search me-1"></i>Generate
+          </button>
+          <button class="btn btn-outline-success ms-2"
+                  (click)="printReport('studentReport', 'Student List Report')">
+            <i class="bi bi-printer me-1"></i>Print
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student Report Table -->
+    <div class="report-card" id="studentReport">
+      <div class="print-header">
+        <h2>School Management System</h2>
+        <p>Student List Report
+          @if (studentClassId()) { — {{ classes() | classlabel:studentClassId() }} }
+        </p>
+        <p>Generated: {{ today | date:'dd MMM yyyy' }}</p>
+      </div>
+
+      @if (loading()) {
+        <div class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Roll No</th>
+              <th>Student Name</th>
+              <th>Class</th>
+              <th>Father Name</th>
+              <th>Phone</th>
+              <th>DOB</th>
+              <th>Admission</th>
+            </tr>
+            </thead>
+            <tbody>
+              @if (studentData().length === 0) {
+                <tr><td colspan="8" class="text-center py-3 text-muted">No data found</td></tr>
+              }
+              @for (s of studentData(); track s.id; let i = $index) {
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td><strong>{{ s.rollNo }}</strong></td>
+                  <td>{{ s.fullName }}</td>
+                  <td>{{ s.className }}</td>
+                  <td>{{ s.fatherName }}</td>
+                  <td>{{ s.phoneNo }}</td>
+                  <td>{{ s.dob | date:'dd MMM yyyy' }}</td>
+                  <td>{{ s.admissionDate | date:'dd MMM yyyy' }}</td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+            <tr>
+              <td colspan="8" class="text-end fw-semibold">
+                Total Students: {{ studentData().length }}
+              </td>
+            </tr>
+            </tfoot>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ==================== ATTENDANCE REPORT ==================== -->
+  @if (activeTab() === 'attendance') {
+    <div class="filter-card">
+      <div class="filter-row">
+        <div class="filter-item">
+          <label>Class</label>
+          <select class="form-control"
+                  [value]="attClassId()"
+                  (change)="attClassId.set(+$any($event.target).value)">
+            <option value="0">-- All Classes --</option>
+            @for (c of classes(); track c.id) {
+              <option [value]="c.id">{{ c.className }} - {{ c.section }}</option>
+            }
+          </select>
+        </div>
+        <div class="filter-item">
+          <label>From Date</label>
+          <input type="date" class="form-control"
+                 [value]="attFromDate()"
+                 (change)="attFromDate.set($any($event.target).value)" />
+        </div>
+        <div class="filter-item">
+          <label>To Date</label>
+          <input type="date" class="form-control"
+                 [value]="attToDate()"
+                 (change)="attToDate.set($any($event.target).value)" />
+        </div>
+        <div class="filter-item align-self-end">
+          <button class="btn btn-primary" (click)="loadAttendanceReport()">
+            <i class="bi bi-search me-1"></i>Generate
+          </button>
+          <button class="btn btn-outline-success ms-2"
+                  (click)="printReport('attendanceReport', 'Attendance Report')">
+            <i class="bi bi-printer me-1"></i>Print
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- View Toggle -->
+    @if (attData()) {
+      <div class="view-toggle-bar">
+        <div class="view-toggle">
+          <button [class.active]="attView() === 'summary'"
+                  (click)="attView.set('summary')">Summary</button>
+          <button [class.active]="attView() === 'detail'"
+                  (click)="attView.set('detail')">Detail</button>
+        </div>
+      </div>
+    }
+
+    <div class="report-card" id="attendanceReport">
+      <div class="print-header">
+        <h2>School Management System</h2>
+        <p>Attendance Report — {{ attData()?.fromDate | date:'dd MMM yyyy' }}
+          to {{ attData()?.toDate | date:'dd MMM yyyy' }}</p>
+      </div>
+
+      @if (loading()) {
+        <div class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+      } @else if (attData()) {
+
+        @if (attView() === 'summary') {
+          <table class="table">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Roll No</th>
+              <th>Student</th>
+              <th>Class</th>
+              <th>Total</th>
+              <th>Present</th>
+              <th>Absent</th>
+              <th>Leave</th>
+              <th>%</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (s of attData().summary; track s.rollNo; let i = $index) {
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td><strong>{{ s.rollNo }}</strong></td>
+                  <td>{{ s.studentName }}</td>
+                  <td>{{ s.className }}</td>
+                  <td>{{ s.total }}</td>
+                  <td class="text-success fw-semibold">{{ s.present }}</td>
+                  <td class="text-danger fw-semibold">{{ s.absent }}</td>
+                  <td class="text-warning fw-semibold">{{ s.leave }}</td>
+                  <td>
+                    <span class="pct-badge"
+                          [class.good]="s.percent >= 75"
+                          [class.warn]="s.percent >= 60 && s.percent < 75"
+                          [class.bad]="s.percent < 60">
+                      {{ s.percent }}%
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+
+        @if (attView() === 'detail') {
+          <table class="table">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Roll No</th>
+              <th>Student</th>
+              <th>Class</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (a of attData().detail; track a.id; let i = $index) {
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td><strong>{{ a.rollNo }}</strong></td>
+                  <td>{{ a.studentName }}</td>
+                  <td>{{ a.className }}</td>
+                  <td>{{ a.attendanceDate | date:'dd MMM yyyy' }}</td>
+                  <td>
+                    <span class="status-chip"
+                          [class.present]="a.status === 'Present'"
+                          [class.absent]="a.status === 'Absent'"
+                          [class.leave]="a.status === 'Leave'">
+                      {{ a.status }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+
+      } @else {
+        <div class="empty-state">
+          <i class="bi bi-calendar-x"></i>
+          <p>Click Generate to load report</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ==================== RESULTS REPORT ==================== -->
+  @if (activeTab() === 'results') {
+    <div class="filter-card">
+      <div class="filter-row">
+        <div class="filter-item">
+          <label>Exam</label>
+          <select class="form-control"
+                  [value]="resultExamId()"
+                  (change)="resultExamId.set(+$any($event.target).value)">
+            <option value="0">-- All Exams --</option>
+            @for (e of exams(); track e.id) {
+              <option [value]="e.id">{{ e.examName }} — {{ e.className }}</option>
+            }
+          </select>
+        </div>
+        <div class="filter-item">
+          <label>Class</label>
+          <select class="form-control"
+                  [value]="resultClassId()"
+                  (change)="resultClassId.set(+$any($event.target).value)">
+            <option value="0">-- All Classes --</option>
+            @for (c of classes(); track c.id) {
+              <option [value]="c.id">{{ c.className }} - {{ c.section }}</option>
+            }
+          </select>
+        </div>
+        <div class="filter-item align-self-end">
+          <button class="btn btn-primary" (click)="loadResultsReport()">
+            <i class="bi bi-search me-1"></i>Generate
+          </button>
+          <button class="btn btn-outline-success ms-2"
+                  (click)="printReport('resultsReport', 'Exam Results Report')">
+            <i class="bi bi-printer me-1"></i>Print
+          </button>
+        </div>
+      </div>
+    </div>
+
+    @if (resultData()) {
+      <div class="view-toggle-bar">
+        <div class="view-toggle">
+          <button [class.active]="resultView() === 'summary'"
+                  (click)="resultView.set('summary')">Summary</button>
+          <button [class.active]="resultView() === 'detail'"
+                  (click)="resultView.set('detail')">Detail</button>
+        </div>
+      </div>
+    }
+
+    <div class="report-card" id="resultsReport">
+      <div class="print-header">
+        <h2>School Management System</h2>
+        <p>Exam Results Report</p>
+      </div>
+
+      @if (loading()) {
+        <div class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+      } @else if (resultData()) {
+
+        @if (resultView() === 'summary') {
+          <table class="table">
+            <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Roll No</th>
+              <th>Student</th>
+              <th>Class</th>
+              <th>Exam</th>
+              <th>Obtained</th>
+              <th>Total</th>
+              <th>%</th>
+              <th>Grade</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (r of resultData().summary; track r.rollNo; let i = $index) {
+                <tr>
+                  <td>
+                    @if (i === 0) { <span class="rank gold">🥇 1st</span> }
+                    @else if (i === 1) { <span class="rank silver">🥈 2nd</span> }
+                    @else if (i === 2) { <span class="rank bronze">🥉 3rd</span> }
+                    @else { {{ i + 1 }} }
+                  </td>
+                  <td><strong>{{ r.rollNo }}</strong></td>
+                  <td>{{ r.studentName }}</td>
+                  <td>{{ r.className }}</td>
+                  <td>{{ r.examName }}</td>
+                  <td>{{ r.totalObtained }}</td>
+                  <td>{{ r.totalMarks }}</td>
+                  <td>{{ r.percentage }}%</td>
+                  <td>
+                    <span [class]="getGradeClass(r.grade)">{{ r.grade }}</span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+
+        @if (resultView() === 'detail') {
+          <table class="table">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Roll No</th>
+              <th>Student</th>
+              <th>Subject</th>
+              <th>Obtained</th>
+              <th>Total</th>
+              <th>%</th>
+              <th>Grade</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (r of resultData().detail; track r.id; let i = $index) {
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td><strong>{{ r.rollNo }}</strong></td>
+                  <td>{{ r.studentName }}</td>
+                  <td>{{ r.subjectName }}</td>
+                  <td>{{ r.obtainedMarks }}</td>
+                  <td>{{ r.totalMarks }}</td>
+                  <td>{{ r.percentage }}%</td>
+                  <td><span [class]="getGradeClass(r.grade)">{{ r.grade }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+
+      } @else {
+        <div class="empty-state">
+          <i class="bi bi-award"></i>
+          <p>Click Generate to load report</p>
+        </div>
+      }
+    </div>
+  }
+
+</div>

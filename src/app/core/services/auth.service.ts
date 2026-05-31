@@ -9,6 +9,7 @@ import { environment } from '../../../environments/environment.development';
   providedIn: 'root',
 })
 export class AuthService {
+  // private apiUrl = environment.baseUrl;
   private apiUrl = environment.baseUrl;
 
   constructor(

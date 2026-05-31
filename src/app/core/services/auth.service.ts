@@ -10,6 +10,7 @@ import { environment } from '../../../environments/environment.development';
 })
 export class AuthService {
   private apiUrl = environment.baseUrl;
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -23,9 +24,14 @@ export class AuthService {
           localStorage.setItem('fullName', res.data.fullName);
           localStorage.setItem('role', res.data.role);
           localStorage.setItem('userId', res.data.userId.toString());
+          localStorage.setItem('roleId', res.data.roleId.toString());
         }
       }),
     );
+  }
+
+  getRoleId(): number {
+    return Number(localStorage.getItem('roleId') || 0);
   }
 
   logout(): void {
@@ -47,5 +53,22 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!this.getToken();
+  }
+
+  hasRole(roles: string[]): boolean {
+    const currentRole = this.getRole();
+    return roles.includes(currentRole);
+  }
+
+  isAdmin(): boolean {
+    return this.getRole() === 'Admin';
+  }
+
+  isTeacher(): boolean {
+    return this.getRole() === 'Teacher';
+  }
+
+  isStudent(): boolean {
+    return this.getRole() === 'Student';
   }
 }

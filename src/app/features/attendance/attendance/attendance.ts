@@ -12,6 +12,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ClassNamePipe } from '../../../shared/pipes/classname.pipe';
 import { HttpClient } from '@angular/common/http';
 import { ToastService } from '../../../shared/services/toast.service';
+import { environment } from '../../../../environments/environment.development';
 interface AttendanceRow {
   studentId: number;
   rollNo: string;
@@ -49,6 +50,7 @@ export class Attendance {
     private classService: ClassService,
     private authService: AuthService,
     private toast: ToastService,
+    private http: HttpClient,
   ) {}
 
   ngOnInit() {
@@ -56,7 +58,6 @@ export class Attendance {
     this.userId.set(Number(localStorage.getItem('userId')));
 
     if (this.isAdmin()) {
-      // Admin — sab classes load karo
       this.classService.getAll().subscribe({
         next: (res) => {
           this.classes.set(res.data);
@@ -64,11 +65,34 @@ export class Attendance {
         },
       });
     } else if (this.isTeacher()) {
-      // Teacher — apni assigned classes ke students
-      this.loadTeacherAttendance();
+      // Teacher ki assigned classes load karo
+      const teacherId = Number(localStorage.getItem('roleId'));
+      this.userId.set(teacherId);
+      this.loadTeacherClasses(teacherId);
     }
   }
+  loadTeacherClasses(teacherId: number) {
+    this.http.get<any>(`${environment.baseUrl}/TeacherClasses/byteacher/${teacherId}`).subscribe({
+      next: (res) => {
+        if (res.data && res.data.length > 0) {
+          // Classes format karo
+          const teacherClasses = res.data.map((tc: any) => ({
+            id: tc.classId,
+            className: tc.className.split(' - ')[0],
+            section: tc.className.split(' - ')[1] || '',
+          }));
+          this.classes.set(teacherClasses);
 
+          // Pehli class auto select karo
+          this.selectedClass.set(teacherClasses[0].id);
+          this.loadAttendance();
+        } else {
+          this.classes.set([]);
+        }
+      },
+      error: () => this.classes.set([]),
+    });
+  }
   loadAllStudents() {
     this.loading.set(true);
     const date = this.selectedDate();
@@ -90,10 +114,12 @@ export class Attendance {
   }
 
   loadTeacherAttendance() {
-    debugger
     this.loading.set(true);
+    const teacherId = this.userId();
+    console.log('Loading for teacherId:', teacherId); // Debug
     this.attendanceService.getByTeacher(this.userId(), this.selectedDate()).subscribe({
       next: (res) => {
+        console.log('Teacher attendance:', res); // Debug
         this.rows.set(res.data);
         this.loading.set(false);
       },

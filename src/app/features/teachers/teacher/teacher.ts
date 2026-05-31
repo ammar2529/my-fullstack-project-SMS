@@ -9,6 +9,7 @@ import {
 import { TeacherClassService } from '../../../core/services/teacher-class/teacher-class.service';
 import { ClassService } from '../../../core/services/classes/class.service';
 import { ToastService } from '../../../shared/services/toast.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 
 
@@ -57,6 +58,7 @@ export class Teacher {
     private teacherClassService: TeacherClassService,
     private classService: ClassService,
     private toast: ToastService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit() {
@@ -175,5 +177,10 @@ export class Teacher {
   get availableClasses() {
     const assigned = this.assignedClasses().map((a) => a.classId);
     return this.allClasses().filter((c) => !assigned.includes(c.id));
+  }
+
+  get roleId(): number {
+
+    return this.authService.getRoleId(); // localStorage se roleId nikal lega
   }
 }

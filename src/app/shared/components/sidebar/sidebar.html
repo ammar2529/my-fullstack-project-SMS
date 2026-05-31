@@ -10,17 +10,33 @@
   </div>
 
   <nav class="sidebar-nav">
-    @for (item of menuItems; track item.route) {
-      <a [routerLink]="item.route"
-         routerLinkActive="active"
-         class="nav-item"
-         [title]="item.label"
-         (click)="onNavClick()">
-        <i class="bi {{ item.icon }}"></i>
-        @if (!collapsed()) {
-          <span>{{ item.label }}</span>
-        }
-      </a>
+    @for (group of menuGroups(); track group.title) {
+      @if (!collapsed()) {
+        <div class="nav-group-title">{{ group.title }}</div>
+      }
+      @for (item of group.items; track item.route) {
+        <a [routerLink]="item.route"
+           routerLinkActive="active"
+           class="nav-item"
+           [title]="item.label"
+           (click)="onNavClick()">
+          <i class="bi {{ item.icon }}"></i>
+          @if (!collapsed()) {
+            <span>{{ item.label }}</span>
+          }
+        </a>
+      }
     }
   </nav>
+
+  <!-- User Role Badge -->
+  @if (!collapsed()) {
+    <div class="sidebar-footer">
+      <div class="role-info">
+        <i class="bi bi-shield-check me-2"></i>
+        {{ userRole() }}
+      </div>
+    </div>
+  }
+
 </aside>

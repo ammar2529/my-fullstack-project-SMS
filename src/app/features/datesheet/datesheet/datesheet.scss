@@ -1,0 +1,230 @@
+$primary-color: #1e3a5f; // Deep Navy School Dashboard Theme Base
+$accent-color: #2980b9;
+$border-radius: 12px;
+
+.datesheet-page {
+  padding: 10px 0;
+
+  .page-header {
+    h4 { font-weight: 800; color: $primary-color; letter-spacing: -0.5px; }
+  }
+
+  .action-btn {
+    background-color: $primary-color;
+    border-color: $primary-color;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-weight: 600;
+    transition: background 0.2s;
+    &:hover {
+      background-color: darken($primary-color, 8%);
+      border-color: darken($primary-color, 8%);
+    }
+  }
+
+  // Unified Filter Component
+  .filter-card {
+    background: #fff;
+    border-radius: $border-radius;
+    border: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 1.25rem;
+
+      .filter-item {
+        flex: 1;
+        min-width: 250px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        label { font-size: 0.82rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.3px; }
+        .form-select {
+          border-radius: 8px;
+          border: 1px solid #cbd5e1;
+          font-size: 0.9rem;
+          padding: 9px 12px;
+          &:focus {
+            border-color: $accent-color;
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.15);
+          }
+        }
+      }
+    }
+  }
+
+  // Exam Group & Tables Styling
+  .exam-group {
+    background: #fff;
+    border-radius: $border-radius;
+    overflow: hidden;
+
+    .group-header {
+      background-color: #fff;
+
+      .group-icon {
+        width: 38px;
+        height: 38px;
+        background: #f0f4f8;
+        color: $primary-color;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+      }
+
+      .class-badge {
+        background-color: rgba($accent-color, 0.12);
+        color: $accent-color;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-left: 10px;
+        padding: 5px 10px;
+        border-radius: 6px;
+      }
+    }
+
+    .custom-data-table {
+      thead th {
+        background-color: #f8fafc;
+        color: #475569;
+        font-weight: 700;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #e2e8f0;
+        padding: 14px 10px;
+      }
+
+      tbody td {
+        padding: 14px 10px;
+        font-size: 0.88rem;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .day-span-badge {
+        background: #e2e8f0;
+        color: #475569;
+        font-weight: 700;
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+
+      .time-badge {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 6px;
+
+        &.start-time { background: #e6f4ea; color: #137333; }
+        &.end-time { background: #fce8e6; color: #c5221f; }
+      }
+
+      .venue-cell {
+        font-weight: 500;
+        color: #64748b;
+        i { color: #94a3b8; }
+      }
+    }
+  }
+
+  // Immersive Modal Modifiers
+  .modal-backdrop-custom {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 1040;
+  }
+
+  .datesheet-modal {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 95%; max-width: 850px; max-height: 85vh;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .modal-header-custom {
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      .close-btn { border: none; background: transparent; font-size: 1.2rem; color: #64748b; &:hover { color: #000; } }
+    }
+
+    .modal-body-custom {
+      overflow-y: auto;
+      flex: 1;
+
+      .form-section {
+        .section-title {
+          font-size: 0.95rem; font-weight: 700; color: $primary-color;
+          .step-num {
+            background: $primary-color; color: #fff; width: 22px; height: 22px;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 50%; font-size: 0.75rem; margin-right: 6px;
+          }
+        }
+      }
+
+      // 5-Column Custom CSS Grid Layout Mapping For Sub Rows
+      .subjects-grid-panel {
+        .grid-header-row {
+          display: grid;
+          grid-template-columns: 2.2fr 1.5fr 1.1fr 1.1fr 1.3fr;
+          border-bottom: 2px solid #e2e8f0;
+          div { padding: 10px; font-size: 0.75rem; }
+        }
+
+        .grid-inputs-row {
+          display: grid;
+          grid-template-columns: 2.2fr 1.5fr 1.1fr 1.1fr 1.3fr;
+          border-bottom: 1px solid #e2e8f0;
+          &.even-bg { background-color: #f8fafc; }
+
+          .form-control, .form-select {
+            border-radius: 6px;
+            font-size: 0.85rem;
+            padding: 5px 8px;
+          }
+        }
+      }
+    }
+  }
+
+  // Print Preview Frame Modal Layout
+  .print-preview-modal {
+    position: fixed;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 95%; max-width: 920px; height: 90vh;
+    background: #white; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+    z-index: 1060; display: flex; flex-direction: column;
+
+    .close-x-btn { border: none; background: transparent; line-height: 1; }
+    #printSection { background: #fff; }
+
+    .double-line-divider {
+      border-top: 4px double $primary-color;
+      width: 100%;
+    }
+
+    .print-matrix-table {
+      th { font-size: 0.85rem; text-transform: uppercase; padding: 10px; }
+      td { padding: 10px; font-size: 0.85rem; color: #111; }
+    }
+  }
+}

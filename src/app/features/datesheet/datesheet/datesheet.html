@@ -1,0 +1,296 @@
+<div class="datesheet-page">
+
+  <div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="m-0">Datesheet Configuration</h4>
+      <p class="text-muted small mb-0">Exam schedule management, matrix routines and official sheet reports</p>
+    </div>
+    @if (isAdmin()) {
+      <button class="btn btn-primary action-btn" (click)="openForm()">
+        <i class="bi bi-plus-lg me-2"></i>Create New Datesheet
+      </button>
+    }
+  </div>
+
+  <div class="filter-card card mb-4">
+    <div class="card-body filter-row">
+      <div class="filter-item">
+        <label class="form-label">Filter by Exam</label>
+        <select class="form-select"
+                [value]="filterExam()"
+                (change)="filterExam.set($any($event.target).value)">
+          <option value="">-- All Active Exams --</option>
+          @for (t of examTitles(); track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+      </div>
+      <div class="filter-item">
+        <label class="form-label">Filter by Class</label>
+        <select class="form-select"
+                [value]="filterClass()"
+                (change)="filterClass.set(+$any($event.target).value)">
+          <option value="0">-- All School Classes --</option>
+          @for (c of classes(); track c.id) {
+            <option [value]="c.id">{{ c.className }} - {{ c.section }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary m-3" role="status"></div>
+      <p class="text-muted small">Fetching exam matrix rows...</p>
+    </div>
+  }
+
+  @if (!loading()) {
+    @if (groupedDatesheets().length === 0) {
+      <div class="empty-state text-center py-5 border rounded-3 bg-white shadow-sm">
+        <i class="bi bi-calendar-x display-4 text-muted mb-2 d-block"></i>
+        <h6 class="text-muted fw-bold">No active datesheet entries matched.</h6>
+        <p class="text-muted small px-3">Select another classification filter or deploy a new template configurations grid matrix.</p>
+      </div>
+    }
+
+    @for (group of groupedDatesheets(); track group.examTitle + group.className) {
+      <div class="exam-group card mb-4 border-0 shadow-sm">
+        <div class="card-header group-header d-flex align-items-center bg-white border-bottom py-3 px-4">
+          <div class="group-icon me-3"><i class="bi bi-file-earmark-spreadsheet-fill"></i></div>
+          <div class="group-title">
+            <h5 class="mb-0 fw-bold">{{ group.examTitle }}</h5>
+            <span class="class-badge badge">{{ group.className }}</span>
+          </div>
+          <span class="group-count ms-3 badge rounded-pill bg-light text-dark border">{{ group.items.length }} Papers Allocations</span>
+
+          <div class="group-actions ms-auto d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary" (click)="openPrint(group)">
+              <i class="bi bi-printer me-1"></i>Print Report
+            </button>
+            @if (isAdmin()) {
+              <button class="btn btn-sm btn-outline-danger"
+                      (click)="deleteGroup(group.examTitle, group.classId)">
+                <i class="bi bi-trash me-1"></i>Delete
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="table-responsive px-3 pb-3 pt-2 bg-white rounded-bottom-4">
+          <table class="table table-hover align-middle mb-0 custom-data-table">
+            <thead>
+            <tr>
+              <th width="60">#</th>
+              <th>Subject Name</th>
+              <th>Day</th>
+              <th>Exam Date</th>
+              <th>Start Slot</th>
+              <th>Closing Slot</th>
+              <th>Room / Venue</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (item of group.items; track item.id; let i = $index) {
+                <tr>
+                  <td class="text-muted fw-semibold">{{ i + 1 }}</td>
+                  <td class="fw-bold text-dark">{{ item.subjectName }}</td>
+                  <td><span class="day-span-badge text-capitalize">{{ getDayName(item.examDate).substring(0,3) }}</span></td>
+                  <td class="text-secondary fw-semibold">{{ item.examDate | date:'dd MMM yyyy' }}</td>
+                  <td><span class="time-badge start-time"><i class="bi bi-clock me-1"></i>{{ item.startTime }}</span></td>
+                  <td><span class="time-badge end-time"><i class="bi bi-clock-history me-1"></i>{{ item.endTime }}</span></td>
+                  <td><span class="venue-cell"><i class="bi bi-geo-alt me-1"></i>{{ item.venue || '—' }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+
+  @if (formVisible()) {
+    <div class="modal-backdrop-custom" (click)="formVisible.set(false)"></div>
+    <div class="datesheet-modal card border-0">
+
+      <div class="modal-header-custom d-flex justify-content-between align-items-center py-3 px-4">
+        <h5 class="m-0 fw-bold"><i class="bi bi-calendar-plus me-2"></i>Generate Class Datesheet Routine</h5>
+        <button class="close-btn" (click)="formVisible.set(false)">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="modal-body-custom px-4 py-3">
+        <div class="form-section container-fluid p-0 mb-4">
+          <h6 class="section-title mb-3">
+            <span class="step-num">1</span> Meta Scope Matrix Configuration
+          </h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold text-muted small">Target Exam <span class="text-danger">*</span></label>
+              <select class="form-select" [value]="selectedExamTitle()" (change)="onExamChange($any($event.target).value)">
+                <option value="">-- Choose Target Scheme --</option>
+                @for (t of examTitles(); track t) {
+                  <option [value]="t">{{ t }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold text-muted small">Target Class Group <span class="text-danger">*</span></label>
+              <select class="form-select" [value]="selectedClassId()" (change)="onClassChange(+$any($event.target).value)">
+                <option value="0">-- Choose Allocation Class --</option>
+                @for (c of classes(); track c.id) {
+                  <option [value]="c.id">{{ c.className }} - {{ c.section }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold text-muted small">First Paper Execution Date</label>
+              <input type="date" class="form-control" [value]="examStartDate()" (change)="examStartDate.set($any($event.target).value); generateRows()" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold text-muted small">Expected Wrapping Date</label>
+              <input type="date" class="form-control" [value]="examEndDate()" (change)="examEndDate.set($any($event.target).value)" />
+            </div>
+          </div>
+        </div>
+
+        @if (rows().length > 0) {
+          <div class="form-section container-fluid p-0">
+            <h6 class="section-title mb-3">
+              <span class="step-num">2</span> Routine Grid Allocation Matrix
+              <small class="text-muted ms-2">({{ rows().length }} standard system subjects registered)</small>
+            </h6>
+
+            @if (formLoading()) {
+              <div class="text-center py-4 bg-light rounded-3 border">
+                <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                <span class="text-muted small fw-semibold">Aligning existing data structures...</span>
+              </div>
+            } @else {
+              <div class="subjects-grid-panel border rounded-3 overflow-hidden">
+                <div class="grid-header-row bg-light fw-bold text-secondary text-uppercase small border-b">
+                  <div class="p-2 ps-3">Subject Mapping</div>
+                  <div class="p-2">Execution Date</div>
+                  <div class="p-2">Start Time</div>
+                  <div class="p-2">Closing Time</div>
+                  <div class="p-2 pe-3">Assigned Venue</div>
+                </div>
+
+                <div class="grid-rows-body">
+                  @for (row of rows(); track $index; let i = $index) {
+                    <div class="grid-inputs-row align-items-center border-bottom" [class.even-bg]="i % 2 === 0">
+
+                      <div class="p-2 ps-3">
+                        <select class="form-select form-select-sm" [value]="row.subjectId" (change)="updateSubject(i, +$any($event.target).value)">
+                          @for (s of classSubjects(); track s.id) {
+                            <option [value]="s.id">{{ s.subjectName }}</option>
+                          }
+                        </select>
+                      </div>
+
+                      <div class="p-2">
+                        <input type="date" class="form-control form-control-sm" [value]="row.examDate" (change)="updateRow(i, 'examDate', $any($event.target).value)" />
+                      </div>
+
+                      <div class="p-2">
+                        <input type="time" class="form-control form-control-sm" [value]="row.startTime" (change)="updateRow(i, 'startTime', $any($event.target).value)" />
+                      </div>
+
+                      <div class="p-2">
+                        <input type="time" class="form-control form-control-sm" [value]="row.endTime" (change)="updateRow(i, 'endTime', $any($event.target).value)" />
+                      </div>
+
+                      <div class="p-2 pe-3">
+                        <input type="text" class="form-control form-control-sm" [value]="row.venue" placeholder="e.g. Hall B-1" (input)="updateRow(i, 'venue', $any($event.target).value)" />
+                      </div>
+
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        @if (!rows().length && selectedClassId()) {
+          <div class="text-center py-4 bg-light border border-dashed rounded-3 mt-3">
+            <i class="bi bi-bookmark-x text-muted fs-4"></i>
+            <p class="text-muted small mb-0 mt-1">Is class classification ke sath links subjects data available nahi mila.</p>
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer-custom d-flex justify-content-end gap-2 py-3 px-4 bg-light border-top">
+        <button class="btn btn-sm btn-light border" (click)="formVisible.set(false)">Dismiss Matrix</button>
+        <button class="btn btn-sm btn-primary action-btn" (click)="saveDatesheet()" [disabled]="saving()">
+          @if (saving()) { <span class="spinner-border spinner-border-sm me-1"></span> }
+          <i class="bi bi-cloud-arrow-up me-1"></i>Commit & Save Records
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (printVisible() && printData()) {
+    <div class="modal-backdrop-custom" (click)="printVisible.set(false)"></div>
+    <div class="print-preview-modal card border-0">
+      <div class="modal-header-custom py-2 px-4 bg-dark text-white d-flex justify-content-between align-items-center">
+        <h6 class="m-0 text-white fw-bold"><i class="bi bi-printer me-2"></i>Official Sheet Dispatch Manifest</h6>
+        <button class="btn btn-sm text-white close-x-btn fs-5" (click)="printVisible.set(false)"><i class="bi bi-x"></i></button>
+      </div>
+      <div class="bg-light border-bottom p-3 d-flex gap-2">
+        <button class="btn btn-sm btn-primary" (click)="printDatesheet()">
+          <i class="bi bi-file-earmark-pdf me-1"></i>Dispatch System Print
+        </button>
+        <button class="btn btn-sm btn-secondary border" (click)="printVisible.set(false)">Cancel</button>
+      </div>
+
+      <div id="printSection" class="p-5 bg-white overflow-auto flex-1">
+        <div class="print-header text-center pb-3 mb-4">
+          <h2 class="fw-extrabold mb-1">SCHOOL MANAGEMENT SYSTEM</h2>
+          <h3 class="text-muted mb-2 text-uppercase font-monospace tracking-wide">{{ printData().examTitle }}</h3>
+          <p class="mb-0 fw-bold">Academic Group Routine Target: Class {{ printData().className }}</p>
+          <div class="double-line-divider mt-2"></div>
+        </div>
+
+        <table class="table print-matrix-table table-bordered">
+          <thead>
+          <tr class="table-dark-print">
+            <th class="text-center" style="background-color: #1e3a5f !important; color: #fff !important;">Index</th>
+            <th style="background-color: #1e3a5f !important; color: #fff !important;">Course Title</th>
+            <th style="background-color: #1e3a5f !important; color: #fff !important;">Day</th>
+            <th style="background-color: #1e3a5f !important; color: #fff !important;">Scheduled Calendar Date</th>
+            <th style="background-color: #1e3a5f !important; color: #fff !important;">Time Allocations Range</th>
+            <th style="background-color: #1e3a5f !important; color: #fff !important;">Allocated Venue</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (item of printData().items; track item.id; let i = $index) {
+              <tr>
+                <td class="text-center">{{ i + 1 }}</td>
+                <td class="fw-bold">{{ item.subjectName }}</td>
+                <td class="text-capitalize">{{ getDayName(item.examDate) }}</td>
+                <td>{{ item.examDate | date:'dd MMM yyyy' }}</td>
+                <td class="fw-semibold text-primary">{{ item.startTime }} - {{ item.endTime }}</td>
+                <td>{{ item.venue || 'Main Aud. Block' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <div class="print-signature-footer row mt-5 pt-5">
+          <div class="col-6 text-center">
+            <div class="sig-line mx-auto mb-1" style="border-top:1px solid #222; width:180px;"></div>
+            <span class="small fw-bold text-secondary">Academic Controller</span>
+          </div>
+          <div class="col-6 text-center">
+            <div class="sig-line mx-auto mb-1" style="border-top:1px solid #222; width:180px;"></div>
+            <span class="small fw-bold text-secondary">Principal Office</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

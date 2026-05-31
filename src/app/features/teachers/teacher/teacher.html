@@ -14,6 +14,7 @@
     [data]="teachers()"
     [loading]="loading()"
     [showAssign]="true"
+    [roleId]="roleId"
     (onEdit)="openEdit($event)"
     (onDelete)="onDelete($event)"
     (onAssign)="openAssign($event)">
@@ -33,6 +34,7 @@
     [model]="editModel()"
     [loading]="formLoading()"
     [visible]="formVisible()"
+    [roleId]="roleId"
     (onSave)="onSave($event)"
     (onCancel)="onCancel()" />
 

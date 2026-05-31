@@ -1,5 +1,6 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { SearchBar } from '../../search-bar/search-bar';
+import { RoleConfig } from '../../role-config/role-config';
 
 export interface TableColumn {
   key: string;
@@ -23,11 +24,11 @@ export class ReusableTable {
   onDelete = output<any>();
   showAssign = input(false);
   onAssign = output<any>();
+  roleId = input<number>(0);
 
   searchQuery = signal('');
 
   filteredData = computed(() => {
-    debugger
     const q = this.searchQuery().toLowerCase().trim();
     if (!q) return this.data();
     return this.data().filter((row) =>
@@ -44,5 +45,21 @@ export class ReusableTable {
   }
   isArray(val: any): boolean {
     return Array.isArray(val);
+  }
+
+  canShowSave(): boolean {
+    return RoleConfig[this.roleId()]?.canSave ?? false;
+  }
+
+  canShowCancel(): boolean {
+    return RoleConfig[this.roleId()]?.canCancel ?? false;
+  }
+
+  canShowDelete(): boolean {
+    return RoleConfig[this.roleId()]?.canDelete ?? false;
+  }
+
+  canShowAssign(): boolean {
+    return RoleConfig[this.roleId()]?.canAssign ?? false;
   }
 }

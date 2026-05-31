@@ -8,6 +8,7 @@ export interface LoginResponse {
   fullName: string;
   role: string;
   userId: number;
+  roleId: number;
 }
 
 export interface ApiResponse<T> {

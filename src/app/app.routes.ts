@@ -12,6 +12,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.authRoutes),
   },
   {
+    path: 'unauthorized',
+    loadComponent: () =>
+      import('./features/unauthorized/unauthorized/unauthorized').then((m) => m.Unauthorized),
+  },
+  {
     path: '',
     canActivate: [authGuardGuard],
     loadChildren: () =>

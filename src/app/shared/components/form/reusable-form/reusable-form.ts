@@ -1,5 +1,6 @@
 import { Component, effect, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RoleConfig } from '../../role-config/role-config';
 
 
 export interface FormField {
@@ -23,7 +24,7 @@ export class ReusableForm {
   model = input<any>({});
   loading = input(false);
   visible = input(false);
-
+  roleId = input<number>(0);
   onSave = output<any>();
   onCancel = output<void>();
 
@@ -66,5 +67,21 @@ export class ReusableForm {
 
   cancel() {
     this.onCancel.emit();
+  }
+
+  canShowSave(): boolean {
+    return RoleConfig[this.roleId()]?.canSave ?? false;
+  }
+
+  canShowCancel(): boolean {
+    return RoleConfig[this.roleId()]?.canCancel ?? false;
+  }
+
+  canShowDelete(): boolean {
+    return RoleConfig[this.roleId()]?.canDelete ?? false;
+  }
+
+  canShowAssign(): boolean {
+    return RoleConfig[this.roleId()]?.canAssign ?? false;
   }
 }

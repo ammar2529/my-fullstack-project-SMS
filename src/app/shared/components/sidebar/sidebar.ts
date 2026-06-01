@@ -68,6 +68,7 @@ export class Sidebar {
       roles: ['Admin', 'Teacher', 'Student', 'Parent'],
     },
     { label: 'Reports', icon: 'bi-bar-chart-fill', route: '/reports', roles: ['Admin', 'Teacher'] },
+    { label: 'Settings', icon: 'bi-gear-fill', route: '/settings', roles: ['Admin'] },
   ];
 
   // menuItems = computed(() =>

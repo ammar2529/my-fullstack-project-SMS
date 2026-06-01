@@ -1,4 +1,4 @@
-import { Component, output } from '@angular/core';
+import { Component, input, Input, output } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { RouterLink } from '@angular/router';
 
@@ -13,6 +13,7 @@ export class Navbar {
   toggleMobile = output<void>();
   fullName = '';
   role = '';
+  schoolName = input('SchoolMS');
 
   constructor(private authService: AuthService) {
     this.fullName = authService.getFullName();

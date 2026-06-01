@@ -108,6 +108,10 @@ export const dashboardRoutes: Routes = [
         path: 'reports',
         loadComponent: () => import('../report/report/report').then((m) => m.Report),
       },
+      {
+        path: 'settings',
+        loadComponent: () => import('../setting/setting/setting').then((m) => m.Setting),
+      },
     ],
   },
 ];

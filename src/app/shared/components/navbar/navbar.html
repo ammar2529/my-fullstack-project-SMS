@@ -11,7 +11,7 @@
   </button>
 
   <div class="page-title hide-mobile">
-    <h5>School Management System</h5>
+    <h5>{{ schoolName() }}</h5>
   </div>
 
   <div class="navbar-right">
@@ -34,6 +34,12 @@
             <i class="bi bi-person me-2"></i>Profile
           </a>
         </li>
+                <li>
+          <a class="dropdown-item" routerLink="/settings">
+            <i class="bi-gear-fill me-2"></i>Setting
+          </a>
+        </li>
+
         <li>
           <a class="dropdown-item" routerLink="/profile">
             <i class="bi bi-lock me-2"></i>Change Password

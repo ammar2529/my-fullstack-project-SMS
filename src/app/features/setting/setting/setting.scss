@@ -1,0 +1,85 @@
+.settings-page {
+  max-width: 800px;
+
+  .page-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    h4 { font-weight: 700; color: #1e3a5f; margin: 0; }
+  }
+
+  .tabs-bar {
+    display: flex; gap: 4px;
+    background: #f0f2f5; padding: 4px;
+    border-radius: 10px; width: fit-content;
+    .tab-btn {
+      padding: 8px 20px; border: none; border-radius: 8px;
+      background: transparent; color: #666;
+      font-weight: 500; cursor: pointer; font-size: 0.9rem;
+      &.active { background: #fff; color: #1e3a5f; font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    }
+  }
+
+  .settings-card {
+    background: #fff; border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+
+    .card-title {
+      font-weight: 700; color: #1e3a5f;
+      margin-bottom: 20px; font-size: 0.95rem;
+    }
+
+    .form-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px; margin-bottom: 20px;
+
+      @media (max-width: 576px) { grid-template-columns: 1fr; }
+
+      .form-group {
+        display: flex; flex-direction: column; gap: 6px;
+
+        &.full { grid-column: 1 / -1; }
+
+        label { font-size: 0.82rem; font-weight: 600; color: #555; }
+
+        .form-control {
+          border-radius: 8px; font-size: 0.88rem;
+          &:focus { border-color: #2980b9;
+            box-shadow: 0 0 0 3px rgba(41,128,185,0.12); }
+          &:disabled { background: #f8f9fa; cursor: not-allowed; }
+        }
+      }
+    }
+
+    .form-actions {
+      .btn-primary {
+        background: linear-gradient(135deg, #1e3a5f, #2980b9);
+        border: none; border-radius: 8px;
+        padding: 9px 24px; font-weight: 600;
+      }
+    }
+
+    .info-cards {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin-bottom: 20px;
+
+      @media (max-width: 768px) { grid-template-columns: 1fr; }
+
+      .info-card {
+        display: flex; align-items: center; gap: 14px;
+        padding: 16px; border-radius: 12px;
+        border-left: 4px solid transparent;
+
+        i { font-size: 1.6rem; flex-shrink: 0; }
+        h6 { margin: 0; font-size: 0.78rem; color: #888; text-transform: uppercase; }
+        p  { margin: 4px 0 0; font-weight: 600; color: #333; font-size: 0.9rem; }
+
+        &.blue   { background: #e8f4fd; border-left-color: #2980b9; i { color: #2980b9; } }
+        &.green  { background: #eafaf1; border-left-color: #27ae60; i { color: #27ae60; } }
+        &.purple { background: #f5eef8; border-left-color: #8e44ad; i { color: #8e44ad; } }
+      }
+    }
+  }
+}

@@ -1,0 +1,173 @@
+<div class="settings-page">
+
+  <div class="page-header">
+    <div>
+      <h4>Settings</h4>
+      <p class="text-muted">School configuration and preferences</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  }
+
+  @if (!loading()) {
+
+    <!-- Tabs -->
+    <div class="tabs-bar mb-4">
+      <button class="tab-btn" [class.active]="activeTab() === 'school'"
+              (click)="activeTab.set('school')">
+        <i class="bi bi-building me-2"></i>School Info
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'academic'"
+              (click)="activeTab.set('academic')">
+        <i class="bi bi-calendar3 me-2"></i>Academic
+      </button>
+    </div>
+
+    <!-- School Info Tab -->
+    @if (activeTab() === 'school') {
+      <div class="settings-card">
+        <h6 class="card-title">
+          <i class="bi bi-building me-2"></i>School Information
+        </h6>
+
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>School Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control"
+                   [value]="schoolName()"
+                   (input)="schoolName.set($any($event.target).value)"
+                   placeholder="Enter school name"
+                   [disabled]="!isAdmin()" />
+          </div>
+          <div class="form-group full">
+            <label>Address</label>
+            <textarea class="form-control" rows="2"
+                      [value]="schoolAddress()"
+                      (input)="schoolAddress.set($any($event.target).value)"
+                      placeholder="School address"
+                      [disabled]="!isAdmin()">
+            </textarea>
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" class="form-control"
+                   [value]="city()"
+                   (input)="city.set($any($event.target).value)"
+                   placeholder="e.g. Lahore"
+                   [disabled]="!isAdmin()" />
+          </div>
+          <div class="form-group">
+            <label>Country</label>
+            <input type="text" class="form-control"
+                   [value]="country()"
+                   (input)="country.set($any($event.target).value)"
+                   [disabled]="!isAdmin()" />
+          </div>
+          <div class="form-group">
+            <label>Phone No</label>
+            <input type="text" class="form-control"
+                   [value]="phoneNo()"
+                   (input)="phoneNo.set($any($event.target).value)"
+                   placeholder="e.g. 042-35xxxxxx"
+                   [disabled]="!isAdmin()" />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" class="form-control"
+                   [value]="email()"
+                   (input)="email.set($any($event.target).value)"
+                   placeholder="school@email.com"
+                   [disabled]="!isAdmin()" />
+          </div>
+          <div class="form-group">
+            <label>Website</label>
+            <input type="text" class="form-control"
+                   [value]="website()"
+                   (input)="website.set($any($event.target).value)"
+                   placeholder="www.school.edu.pk"
+                   [disabled]="!isAdmin()" />
+          </div>
+          <div class="form-group">
+            <label>Principal Name</label>
+            <input type="text" class="form-control"
+                   [value]="principal()"
+                   (input)="principal.set($any($event.target).value)"
+                   placeholder="Principal name"
+                   [disabled]="!isAdmin()" />
+          </div>
+        </div>
+
+        @if (isAdmin()) {
+          <div class="form-actions">
+            <button class="btn btn-primary" (click)="saveSettings()" [disabled]="saving()">
+              @if (saving()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+              <i class="bi bi-check-lg me-2"></i>Save Settings
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Academic Tab -->
+    @if (activeTab() === 'academic') {
+      <div class="settings-card">
+        <h6 class="card-title">
+          <i class="bi bi-calendar3 me-2"></i>Academic Settings
+        </h6>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Academic Year</label>
+            <select class="form-control"
+                    [value]="academicYear()"
+                    (change)="academicYear.set($any($event.target).value)"
+                    [disabled]="!isAdmin()">
+              @for (y of years; track y) {
+                <option [value]="y">{{ y }}-{{ y + 1 }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Info Cards -->
+        <div class="info-cards">
+          <div class="info-card blue">
+            <i class="bi bi-calendar-check"></i>
+            <div>
+              <h6>Current Academic Year</h6>
+              <p>{{ academicYear() }}-{{ +academicYear() + 1 }}</p>
+            </div>
+          </div>
+          <div class="info-card green">
+            <i class="bi bi-building"></i>
+            <div>
+              <h6>School Name</h6>
+              <p>{{ schoolName() || 'Not set' }}</p>
+            </div>
+          </div>
+          <div class="info-card purple">
+            <i class="bi bi-person-badge"></i>
+            <div>
+              <h6>Principal</h6>
+              <p>{{ principal() || 'Not set' }}</p>
+            </div>
+          </div>
+        </div>
+
+        @if (isAdmin()) {
+          <div class="form-actions">
+            <button class="btn btn-primary" (click)="saveSettings()" [disabled]="saving()">
+              @if (saving()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+              <i class="bi bi-check-lg me-2"></i>Save Settings
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+  }
+</div>

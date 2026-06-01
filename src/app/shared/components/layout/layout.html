@@ -13,8 +13,10 @@
 
   <div class="main-area">
     <app-navbar
+      [schoolName]="schoolName()"
       (toggleSidebar)="toggleSidebar()"
       (toggleMobile)="toggleMobile()" />
+
     <main class="content-area">
       <router-outlet />
     </main>

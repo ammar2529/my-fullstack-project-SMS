@@ -61,10 +61,11 @@
     <!-- Student Report Table -->
     <div class="report-card" id="studentReport">
       <div class="print-header">
-        <h2>School Management System</h2>
+        <h2>{{ schoolName() }}</h2>
         <p>Student List Report
           @if (studentClassId()) { — {{ classes() | classlabel:studentClassId() }} }
         </p>
+        <p>Principal: {{ principal() }}</p>
         <p>Generated: {{ today | date:'dd MMM yyyy' }}</p>
       </div>
 

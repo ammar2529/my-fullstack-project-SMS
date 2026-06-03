@@ -69,6 +69,21 @@ export class Sidebar {
     },
     { label: 'Reports', icon: 'bi-bar-chart-fill', route: '/reports', roles: ['Admin', 'Teacher'] },
     { label: 'Settings', icon: 'bi-gear-fill', route: '/settings', roles: ['Admin'] },
+    // Student only items
+    { label: 'Bulk Import', icon: 'bi-upload', route: '/bulk-import', roles: ['Admin'] },
+    {
+      label: 'Holidays',
+      icon: 'bi-calendar-heart',
+      route: '/holidays',
+      roles: ['Admin', 'Teacher', 'Student', 'Parent'],
+    },
+    { label: 'My Result', icon: 'bi-award', route: '/my-result', roles: ['Student'] },
+    {
+      label: 'My Attendance',
+      icon: 'bi-calendar-check',
+      route: '/my-attendance',
+      roles: ['Student'],
+    },
   ];
 
   // menuItems = computed(() =>
@@ -96,8 +111,15 @@ export class Sidebar {
         title: 'Management',
         items: this.allMenuItems.filter(
           (i) =>
-            ['Attendance', 'Exams', 'Datesheet', 'Timetable'].includes(i.label) &&
-            i.roles.includes(role),
+            [
+              'Attendance',
+              'My Attendance',
+              'My Result',
+              'Exams',
+              'Datesheet',
+              'Timetable',
+              'Bulk Import',
+            ].includes(i.label) && i.roles.includes(role),
         ),
       },
       {

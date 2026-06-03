@@ -1,0 +1,104 @@
+.portal-page {
+  .page-header {
+    margin-bottom: 20px;
+    h4 { font-weight: 700; color: #1e3a5f; margin: 0; }
+  }
+
+  .filter-card {
+    background: #fff; border-radius: 14px;
+    padding: 16px 20px; margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    .filter-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+    .filter-item {
+      display: flex; flex-direction: column; gap: 6px;
+      label { font-size: 0.82rem; font-weight: 600; color: #555; }
+      .form-control { border-radius: 8px; }
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #1e3a5f, #2980b9);
+      border: none; border-radius: 8px; padding: 9px 18px; font-weight: 600;
+    }
+  }
+
+  .empty-state {
+    text-align: center; padding: 60px; background: #fff;
+    border-radius: 14px; color: #aaa;
+    i { font-size: 3rem; display: block; margin-bottom: 12px; }
+  }
+
+  // Attendance Stats
+  .att-stats {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 14px; margin-bottom: 20px;
+    @media (max-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 480px) { grid-template-columns: repeat(2, 1fr); }
+
+    .att-stat {
+      background: #fff; border-radius: 12px; padding: 14px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-left: 4px solid transparent;
+
+      i  { font-size: 1.5rem; flex-shrink: 0; }
+      h3 { font-size: 1.3rem; font-weight: 700; margin: 0; color: #1e3a5f; }
+      p  { font-size: 0.75rem; color: #888; margin: 0; }
+
+      &.blue   { border-left-color: #2980b9; i { color: #2980b9; } }
+      &.green  { border-left-color: #27ae60; i { color: #27ae60; } }
+      &.red    { border-left-color: #e74c3c; i { color: #e74c3c; } }
+      &.orange { border-left-color: #f39c12; i { color: #f39c12; } }
+      &.purple { border-left-color: #8e44ad; i { color: #8e44ad; } }
+    }
+  }
+
+  // Tables
+  .att-table, .subjects-table {
+    background: #fff; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+
+    .table { margin: 0;
+      thead tr { background: #f8f9fa;
+        th { font-size: 0.78rem; font-weight: 700; color: #6c757d;
+          text-transform: uppercase; padding: 12px 14px; border: none; }
+      }
+      tbody tr { border-bottom: 1px solid #f0f2f5;
+        &:hover { background: #f8fbff; }
+        td { padding: 11px 14px; font-size: 0.86rem; border: none; }
+      }
+    }
+  }
+
+  .status-badge {
+    padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+    &.present { background: #d1e7dd; color: #0f5132; }
+    &.absent  { background: #f8d7da; color: #842029; }
+    &.leave   { background: #fff3cd; color: #856404; }
+  }
+
+  // Exam Cards
+  .exam-card {
+    background: #fff; border-radius: 14px; margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden;
+
+    .exam-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px; background: linear-gradient(135deg, #1e3a5f, #2980b9);
+      color: #fff; flex-wrap: wrap; gap: 12px;
+
+      .exam-title { display: flex; align-items: center;
+        h5 { margin: 0; font-weight: 700; }
+      }
+      .exam-summary { display: flex; align-items: center; gap: 16px;
+        .total { font-size: 0.9rem; opacity: 0.9; }
+        .pct   { font-size: 1.2rem; font-weight: 700;
+          background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; }
+      }
+    }
+  }
+
+  .grade-badge {
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 0.82rem; font-weight: 700;
+  }
+}

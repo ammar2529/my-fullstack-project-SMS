@@ -5,6 +5,7 @@ import { ExamService } from '../../../core/services/exam/exam.service';
 import { ToastService } from '../../../shared/services/toast.service';
 import { DatePipe } from '@angular/common';
 import { ClasslabelPipe } from '../../../shared/pipes/classlabel-pipe';
+import { SettingsService } from '../../../core/services/settings/settings.service';
 
 @Component({
   selector: 'app-report',
@@ -37,16 +38,28 @@ export class Report {
   resultClassId = signal(0);
   resultView = signal<'summary' | 'detail'>('summary');
   today = new Date();
+  schoolName = signal('School Management System');
+  principal = signal('');
   constructor(
     private reportService: ReportService,
     private classService: ClassService,
     private examService: ExamService,
+    private settingsService: SettingsService,
+
     private toast: ToastService,
   ) {}
 
   ngOnInit() {
     this.classService.getAll().subscribe({ next: (res) => this.classes.set(res.data) });
     this.examService.getAll().subscribe({ next: (res) => this.exams.set(res.data) });
+
+    this.settingsService.getSettings().subscribe({
+      next: (res) => {
+        this.schoolName.set(res.data?.schoolName || 'School Management System');
+        this.principal.set(res.data?.principal || '');
+      },
+    });
+
     this.loadStudentReport();
   }
 

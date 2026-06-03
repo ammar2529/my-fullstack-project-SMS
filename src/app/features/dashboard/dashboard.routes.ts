@@ -112,6 +112,46 @@ export const dashboardRoutes: Routes = [
         path: 'settings',
         loadComponent: () => import('../setting/setting/setting').then((m) => m.Setting),
       },
+
+      // Student sirf yeh pages dekhe
+      {
+        path: 'my-result',
+        canActivate: [roleGuard],
+        data: { roles: ['Student'] },
+        loadComponent: () =>
+          import('../student-portal/my-result/my-result').then((m) => m.MyResult),
+      },
+      {
+        path: 'my-attendance',
+        canActivate: [roleGuard],
+        data: { roles: ['Student'] },
+        loadComponent: () =>
+          import('../student-portal/my-attendance/my-attendance').then((m) => m.MyAttendance),
+      },
+      {
+        path: 'bulk-import',
+        canActivate: [roleGuard],
+        data: { roles: ['Admin'] },
+        loadComponent: () => import('../bulk-import/bulk-import').then((m) => m.BulkImport),
+      },
+      // {
+      //   path: 'holidays',
+      //   loadComponent: () => import('../holidays/holidays').then((m) => m.Holidays),
+      // },
+      {
+        path: 'my-result',
+        canActivate: [roleGuard],
+        data: { roles: ['Student'] },
+        loadComponent: () =>
+          import('../student-portal/my-result/my-result').then((m) => m.MyResult),
+      },
+      {
+        path: 'my-attendance',
+        canActivate: [roleGuard],
+        data: { roles: ['Student'] },
+        loadComponent: () =>
+          import('../student-portal/my-attendance/my-attendance').then((m) => m.MyAttendance),
+      },
     ],
   },
 ];

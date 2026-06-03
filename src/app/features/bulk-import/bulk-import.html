@@ -1,0 +1,126 @@
+<div class="import-page">
+
+  <div class="page-header">
+    <div>
+      <h4>Bulk Import</h4>
+      <p class="text-muted">Import students from Excel file</p>
+    </div>
+    <button class="btn btn-outline-success" (click)="downloadTemplate()">
+      <i class="bi bi-download me-2"></i>Download Template
+    </button>
+  </div>
+
+  <!-- Upload Zone -->
+  @if (preview().length === 0 && !result()) {
+    <div class="upload-zone"
+         [class.drag-over]="dragOver()"
+         (dragover)="$event.preventDefault(); dragOver.set(true)"
+         (dragleave)="dragOver.set(false)"
+         (drop)="onDrop($event)">
+      <i class="bi bi-cloud-upload"></i>
+      <h5>Drag & Drop Excel File</h5>
+      <p>or click to browse</p>
+      <input type="file" accept=".xlsx,.xls" (change)="onFileChange($event)" #fileInput hidden />
+      <button class="btn btn-primary" (click)="fileInput.click()">
+        <i class="bi bi-folder-open me-2"></i>Browse File
+      </button>
+      <div class="format-hint">
+        <p>Supported: .xlsx, .xls</p>
+        <p>Columns: Full Name, Email, Roll No, Class, Father Name, Phone, DOB, Address</p>
+      </div>
+    </div>
+  }
+
+  <!-- Preview Table -->
+  @if (preview().length > 0) {
+    <div class="preview-card">
+      <div class="preview-header">
+        <h6>
+          <i class="bi bi-eye me-2"></i>Preview
+          <span class="badge bg-primary ms-2">{{ preview().length }} rows</span>
+        </h6>
+        <div class="preview-actions">
+          <button class="btn btn-outline-secondary btn-sm me-2" (click)="clearPreview()">
+            <i class="bi bi-x me-1"></i>Clear
+          </button>
+          <button class="btn btn-primary" (click)="importStudents()" [disabled]="importing()">
+            @if (importing()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+            <i class="bi bi-upload me-2"></i>Import {{ preview().length }} Students
+          </button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Roll No</th>
+            <th>Class</th>
+            <th>Father</th>
+            <th>Status</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (s of preview(); track s.rowNo) {
+              <tr [class.error-row]="s.hasError || !s.classId">
+                <td>{{ s.rowNo }}</td>
+                <td>{{ s.fullName }}</td>
+                <td>{{ s.email }}</td>
+                <td>{{ s.rollNo }}</td>
+                <td>
+                  @if (s.classId) {
+                    <span class="text-success">{{ s.className }}</span>
+                  } @else {
+                    <span class="text-danger">❌ {{ s.className }}</span>
+                  }
+                </td>
+                <td>{{ s.fatherName }}</td>
+                <td>
+                  @if (!s.hasError && s.classId) {
+                    <span class="badge bg-success">Ready</span>
+                  } @else {
+                    <span class="badge bg-danger">Error</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- Import Result -->
+  @if (result()) {
+    <div class="result-card">
+      <div class="result-stats">
+        <div class="result-stat success">
+          <i class="bi bi-check-circle-fill"></i>
+          <div><h3>{{ result().imported }}</h3><p>Imported</p></div>
+        </div>
+        <div class="result-stat danger">
+          <i class="bi bi-x-circle-fill"></i>
+          <div><h3>{{ result().failed }}</h3><p>Failed</p></div>
+        </div>
+      </div>
+
+      @if (result().errors?.length > 0) {
+        <div class="errors-list">
+          <h6 class="text-danger mb-2">Errors:</h6>
+          @for (err of result().errors; track err) {
+            <div class="error-item">
+              <i class="bi bi-exclamation-circle me-2 text-danger"></i>{{ err }}
+            </div>
+          }
+        </div>
+      }
+
+      <button class="btn btn-primary mt-3" (click)="result.set(null)">
+        <i class="bi bi-plus me-2"></i>Import More
+      </button>
+    </div>
+  }
+</div>

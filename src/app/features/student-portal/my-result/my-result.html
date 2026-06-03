@@ -1,0 +1,70 @@
+<div class="portal-page">
+  <div class="page-header">
+    <h4>My Results</h4>
+    <p class="text-muted">Your exam results</p>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  }
+
+  @if (!loading()) {
+    @if (results().length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-award"></i>
+        <p>No results found</p>
+      </div>
+    }
+
+    @for (exam of results(); track exam.examName) {
+      <div class="exam-card">
+        <div class="exam-header">
+          <div class="exam-title">
+            <i class="bi bi-pencil-square me-2"></i>
+            <h5>{{ exam.examName }}</h5>
+          </div>
+          <div class="exam-summary">
+            <span class="total">{{ exam.totalObtained }}/{{ exam.totalMarks }}</span>
+            <span class="pct"
+                  [style.color]="exam.percentage >= 60 ? '#27ae60' : '#e74c3c'">
+              {{ exam.percentage }}%
+            </span>
+          </div>
+        </div>
+
+        <div class="subjects-table">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Obtained</th>
+              <th>Total</th>
+              <th>%</th>
+              <th>Grade</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (s of exam.subjects; track s.subjectName) {
+                <tr>
+                  <td class="fw-semibold">{{ s.subjectName }}</td>
+                  <td>{{ s.obtainedMarks }}</td>
+                  <td>{{ s.totalMarks }}</td>
+                  <td>{{ s.percentage }}%</td>
+                  <td>
+                    <span class="grade-badge"
+                          [style.background]="getGradeColor(s.grade) + '20'"
+                          [style.color]="getGradeColor(s.grade)">
+                      {{ s.grade }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+</div>

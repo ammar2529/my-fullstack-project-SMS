@@ -7,11 +7,13 @@ import { TableColumn } from '../../../shared/components/table/reusable-table/reu
 import { FormField } from '../../../shared/components/form/reusable-form/reusable-form';
 import { ClassService } from '../../../core/services/classes/class.service';
 import { FormsModule } from '@angular/forms';
-import { CurrencyPipe, DecimalPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment.development';
 
 @Component({
   selector: 'app-fee-payment',
-  imports: [FormsModule, CurrencyPipe, DecimalPipe],
+  imports: [FormsModule, CurrencyPipe, DecimalPipe, DatePipe],
   templateUrl: './fee-payment.html',
   styleUrl: './fee-payment.scss',
 })
@@ -25,7 +27,8 @@ export class FeePayment {
   loading = signal(false);
   saving = signal(false);
   classBaseFee = signal<number>(0);
-
+  receiptData = signal<any>(null);
+  receiptVisible = signal(false);
   months = [
     'January',
     'February',
@@ -55,6 +58,7 @@ export class FeePayment {
   constructor(
     private classService: ClassService,
     private feePaymentService: FeePaymentService,
+    private http: HttpClient,
     private toast: ToastService,
   ) {}
 
@@ -184,5 +188,58 @@ export class FeePayment {
         this.toast.error('Network transaction failed. Unable to sync data changes.');
       },
     });
+  }
+
+  viewReceipt(paymentId: number) {
+    this.http.get<any>(`${environment.baseUrl}/FeePayments/receipt/${paymentId}`).subscribe({
+      next: (res) => {
+        this.receiptData.set(res.data);
+        this.receiptVisible.set(true);
+      },
+      error: () => this.toast.error('Receipt load failed!'),
+    });
+  }
+
+  printReceipt() {
+    const content = document.getElementById('receiptSection');
+    if (!content) return;
+
+    const win = window.open('', '_blank', 'width=600,height=700');
+    if (!win) return;
+
+    win.document.write(`
+    <html>
+      <head>
+        <title>Fee Receipt</title>
+        <style>
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body { font-family: Arial, sans-serif; padding: 20px; font-size: 13px; }
+          .receipt-header { text-align: center; margin-bottom: 16px; border-bottom: 2px solid #1e3a5f; padding-bottom: 12px; }
+          .receipt-header h2 { color: #1e3a5f; font-size: 18px; }
+          .receipt-header p  { color: #666; font-size: 11px; margin-top: 2px; }
+          .receipt-no { background: #1e3a5f; color: #fff; text-align: center; padding: 8px; border-radius: 6px; margin: 12px 0; font-weight: bold; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+          .info-item { border: 1px solid #eee; padding: 8px; border-radius: 6px; }
+          .info-label { font-size: 10px; color: #888; text-transform: uppercase; }
+          .info-value { font-weight: 600; color: #333; margin-top: 2px; }
+          .fee-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+          .fee-table th { background: #1e3a5f; color: #fff; padding: 8px 10px; font-size: 12px; }
+          .fee-table td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+          .total-row td { font-weight: bold; background: #f8f9fa; }
+          .status-paid    { color: #27ae60; font-weight: bold; }
+          .status-pending { color: #f39c12; font-weight: bold; }
+          .footer { margin-top: 20px; display: flex; justify-content: space-between; }
+          .sig { border-top: 1px solid #333; width: 140px; text-align: center; padding-top: 6px; font-size: 11px; color: #666; }
+          @media print { body { padding: 10px; } }
+        </style>
+      </head>
+      <body>${content.innerHTML}</body>
+    </html>
+  `);
+    win.document.close();
+    setTimeout(() => {
+      win.print();
+      win.close();
+    }, 500);
   }
 }

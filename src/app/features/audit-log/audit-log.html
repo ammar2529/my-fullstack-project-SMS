@@ -1,0 +1,123 @@
+<div class="audit-page">
+  <div class="page-header">
+    <div>
+      <h4>Audit Log</h4>
+      <p class="text-muted">Track all system activities</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-card">
+    <div class="filter-row">
+      <div class="filter-item">
+        <label>Action</label>
+        <select class="form-control"
+                [value]="filterAction()"
+                (change)="filterAction.set($any($event.target).value); loadLogs()">
+          <option value="">-- All Actions --</option>
+          @for (a of actions; track a) {
+            <option [value]="a">{{ a }}</option>
+          }
+        </select>
+      </div>
+      <div class="filter-item">
+        <label>Entity</label>
+        <select class="form-control"
+                [value]="filterEntity()"
+                (change)="filterEntity.set($any($event.target).value); loadLogs()">
+          <option value="">-- All Entities --</option>
+          @for (e of entities; track e) {
+            <option [value]="e">{{ e }}</option>
+          }
+        </select>
+      </div>
+      <div class="filter-item align-self-end">
+        <button class="btn btn-outline-secondary"
+                (click)="filterAction.set(''); filterEntity.set(''); loadLogs()">
+          <i class="bi bi-x me-1"></i>Clear
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="audit-stats">
+    <span class="stat-info">
+      Total Records: <strong>{{ total() }}</strong>
+    </span>
+    <span class="stat-info">
+      Page {{ page() }} of {{ totalPages() }}
+    </span>
+  </div>
+
+  <!-- Table -->
+  <div class="audit-table">
+    @if (loading()) {
+      <div class="text-center py-4">
+        <div class="spinner-border text-primary"></div>
+      </div>
+    } @else {
+      <table class="table">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>User</th>
+          <th>Action</th>
+          <th>Entity</th>
+          <th>Details</th>
+          <th>IP Address</th>
+          <th>Date & Time</th>
+        </tr>
+        </thead>
+        <tbody>
+          @if (logs().length === 0) {
+            <tr>
+              <td colspan="7" class="text-center py-4 text-muted">
+                <i class="bi bi-inbox fs-2 d-block mb-2"></i>No logs found
+              </td>
+            </tr>
+          }
+          @for (log of logs(); track log.id; let i = $index) {
+            <tr>
+              <td class="text-muted">{{ (page() - 1) * size() + i + 1 }}</td>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar">{{ log.userName?.charAt(0) }}</div>
+                  <span>{{ log.userName }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="action-badge"
+                      [style.background]="getActionColor(log.action) + '20'"
+                      [style.color]="getActionColor(log.action)">
+                  {{ log.action }}
+                </span>
+              </td>
+              <td><span class="entity-badge">{{ log.entity }}</span></td>
+              <td class="details-cell">{{ log.details }}</td>
+              <td class="text-muted">{{ log.ipAddress || '—' }}</td>
+              <td class="text-muted small">
+                {{ log.createdAt | date:'dd MMM yyyy, hh:mm a' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      @if (totalPages() > 1) {
+        <div class="pagination-bar">
+          <button class="btn btn-outline-primary btn-sm"
+                  (click)="prevPage()" [disabled]="page() === 1">
+            <i class="bi bi-chevron-left"></i> Prev
+          </button>
+          <span>{{ page() }} / {{ totalPages() }}</span>
+          <button class="btn btn-outline-primary btn-sm"
+                  (click)="nextPage()" [disabled]="page() === totalPages()">
+            Next <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      }
+    }
+  </div>
+</div>

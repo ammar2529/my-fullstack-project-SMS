@@ -84,6 +84,8 @@ export class Sidebar {
       route: '/my-attendance',
       roles: ['Student'],
     },
+    { label: 'My Fee', icon: 'bi-cash-stack', route: '/my-fee', roles: ['Student'] },
+    { label: 'Audit Log', icon: 'bi-journal-text', route: '/audit-log', roles: ['Admin'] },
   ];
 
   // menuItems = computed(() =>
@@ -118,7 +120,8 @@ export class Sidebar {
               'Exams',
               'Datesheet',
               'Timetable',
-              'Bulk Import',
+              'Holidays',
+
             ].includes(i.label) && i.roles.includes(role),
         ),
       },
@@ -126,9 +129,21 @@ export class Sidebar {
         title: 'Finance & Other',
         items: this.allMenuItems.filter(
           (i) =>
-            ['Fee Configuration', 'Fee Payments', 'Library', 'Transport', 'Notices'].includes(
-              i.label,
-            ) && i.roles.includes(role),
+            [
+              'Fee Configuration',
+              'Fee Payments',
+              'Library',
+              'Transport',
+              'Notices',
+              'My Fee',
+            ].includes(i.label) && i.roles.includes(role),
+        ),
+      },
+      {
+        title: 'System',
+        items: this.allMenuItems.filter(
+          (i) =>
+            ['Settings', 'Audit Log', 'Bulk Import'].includes(i.label) && i.roles.includes(role),
         ),
       },
     ].filter((g) => g.items.length > 0);

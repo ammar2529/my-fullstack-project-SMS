@@ -4,6 +4,7 @@ import { Navbar } from '../navbar/navbar';
 import { Sidebar } from '../sidebar/sidebar';
 import { Toast } from '../toast/toast';
 import { SettingsService } from '../../../core/services/settings/settings.service';
+import { NotificationService } from '../../../core/services/notification/notification.service';
 
 @Component({
   selector: 'app-layout',
@@ -16,11 +17,20 @@ export class Layout {
 
   sidebarCollapsed = signal(false);
   schoolName = signal('SchoolMS');
-  constructor(private settingsService: SettingsService) {}
+  constructor(
+    private settingsService: SettingsService,
+    private notifService: NotificationService, // ← Add
+  ) {}
+
   ngOnInit() {
     this.settingsService.getSettings().subscribe({
       next: (res) => this.schoolName.set(res.data?.schoolName || 'SchoolMS'),
     });
+    // Notifications auto load
+    this.notifService.loadNotifications();
+
+    // Har 5 minute mein refresh
+    setInterval(() => this.notifService.loadNotifications(), 5 * 60 * 1000);
   }
 
   toggleSidebar() {

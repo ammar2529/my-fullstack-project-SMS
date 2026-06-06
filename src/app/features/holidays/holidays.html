@@ -1,0 +1,81 @@
+<div class="holidays-page">
+  <div class="page-header">
+    <div>
+      <h4>Holidays</h4>
+      <p class="text-muted">School holiday calendar</p>
+    </div>
+    @if (isAdmin()) {
+      <button class="btn btn-primary" (click)="openAdd()">
+        <i class="bi bi-plus-lg me-2"></i>Add Holiday
+      </button>
+    }
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-bar">
+    @for (type of ['', 'Public', 'School', 'Exam', 'Summer', 'Winter']; track type) {
+      <button class="filter-chip"
+              [class.active]="filterType() === type"
+              (click)="filterType.set(type)">
+        {{ type || 'All' }}
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  }
+
+  @if (!loading()) {
+    @if (filteredHolidays().length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-calendar-heart"></i>
+        <p>No holidays found</p>
+      </div>
+    }
+
+    <div class="holidays-grid">
+      @for (h of filteredHolidays(); track h.id) {
+        <div class="holiday-card" [class.upcoming]="isUpcoming(h.startDate)">
+          <div class="card-left" [style.background]="getTypeColor(h.holidayType)">
+            <span class="type-label">{{ h.holidayType }}</span>
+            <span class="duration">{{ getDuration(h.startDate, h.endDate) }} days</span>
+          </div>
+          <div class="card-body">
+            <div class="card-top">
+              <h6>{{ h.title }}</h6>
+              @if (isUpcoming(h.startDate)) {
+                <span class="upcoming-badge">Upcoming</span>
+              }
+            </div>
+            <div class="date-row">
+              <span><i class="bi bi-calendar3 me-1"></i>
+                {{ h.startDate | date:'dd MMM' }} — {{ h.endDate | date:'dd MMM yyyy' }}
+              </span>
+            </div>
+            @if (h.description) {
+              <p class="desc">{{ h.description }}</p>
+            }
+          </div>
+          @if (isAdmin()) {
+            <div class="card-actions">
+              <button (click)="openEdit(h)"><i class="bi bi-pencil"></i></button>
+              <button (click)="onDelete(h)"><i class="bi bi-trash"></i></button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <app-reusable-form
+    [title]="isEdit() ? 'Edit Holiday' : 'Add Holiday'"
+    [fields]="formFields"
+    [model]="editModel()"
+    [loading]="formLoading()"
+    [visible]="formVisible()"
+    (onSave)="onSave($event)"
+    (onCancel)="formVisible.set(false)" />
+</div>

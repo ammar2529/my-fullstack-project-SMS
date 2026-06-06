@@ -1,6 +1,7 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { SearchBar } from '../../search-bar/search-bar';
 import { RoleConfig } from '../../role-config/role-config';
+import { environment } from '../../../../../environments/environment.development';
 
 export interface TableColumn {
   key: string;
@@ -25,7 +26,7 @@ export class ReusableTable {
   showAssign = input(false);
   onAssign = output<any>();
   roleId = input<number>(0);
-
+  apiBaseUrl = environment.baseUrl.replace('/api', '');
   searchQuery = signal('');
 
   filteredData = computed(() => {
@@ -47,10 +48,32 @@ export class ReusableTable {
     return Array.isArray(val);
   }
 
+  isImagePath(key: string): boolean {
+    return key.toLowerCase().includes('picture') || key.toLowerCase().includes('image');
+  }
   canShowSave(): boolean {
     return RoleConfig[this.roleId()]?.canSave ?? false;
   }
 
+  getStudentImageUrl(imagePath: string | null | undefined): string {
+    if (!imagePath) {
+      return 'images/default-avatar.png';
+    }
+
+    // 1. Agar imagePath ke andar pehle se poora URL majood ho
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+
+    // 2. Agar path ke shuru mein double slash ya repeat ho raha ho to saaf karein
+    let cleanPath = imagePath;
+    if (cleanPath.includes('/uploads/students//uploads/students/')) {
+      cleanPath = cleanPath.replace('/uploads/students//uploads/students/', '/uploads/students/');
+    }
+
+    // 3. Final unique path return karein
+    return this.apiBaseUrl + cleanPath;
+  }
   canShowCancel(): boolean {
     return RoleConfig[this.roleId()]?.canCancel ?? false;
   }
@@ -62,4 +85,6 @@ export class ReusableTable {
   canShowAssign(): boolean {
     return RoleConfig[this.roleId()]?.canAssign ?? false;
   }
+
+  protected readonly environment = environment;
 }

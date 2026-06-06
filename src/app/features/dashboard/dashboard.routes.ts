@@ -134,10 +134,10 @@ export const dashboardRoutes: Routes = [
         data: { roles: ['Admin'] },
         loadComponent: () => import('../bulk-import/bulk-import').then((m) => m.BulkImport),
       },
-      // {
-      //   path: 'holidays',
-      //   loadComponent: () => import('../holidays/holidays').then((m) => m.Holidays),
-      // },
+      {
+        path: 'holidays',
+        loadComponent: () => import('../holidays/holidays').then((m) => m.Holidays),
+      },
       {
         path: 'my-result',
         canActivate: [roleGuard],
@@ -151,6 +151,18 @@ export const dashboardRoutes: Routes = [
         data: { roles: ['Student'] },
         loadComponent: () =>
           import('../student-portal/my-attendance/my-attendance').then((m) => m.MyAttendance),
+      },
+      {
+        path: 'my-fee',
+        canActivate: [roleGuard],
+        data: { roles: ['Student'] },
+        loadComponent: () => import('../student-portal/my-fee/my-fee').then((m) => m.MyFee),
+      },
+      {
+        path: 'audit-log',
+        canActivate: [roleGuard],
+        data: { roles: ['Admin'] },
+        loadComponent: () => import('../audit-log/audit-log').then((m) => m.AuditLog),
       },
     ],
   },

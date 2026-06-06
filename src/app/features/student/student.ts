@@ -24,6 +24,7 @@ export class Student implements OnInit {
   classes = signal<any[]>([]);
 
   columns: TableColumn[] = [
+    { key: 'profilePicture', label: 'Photo' },
     { key: 'rollNo', label: 'Roll No' },
     { key: 'fullName', label: 'Full Name' },
     { key: 'className', label: 'Class' },
@@ -34,6 +35,7 @@ export class Student implements OnInit {
 
   get formFields(): FormField[] {
     return [
+      { key: 'imageFile', label: 'Profile Picture', type: 'file', required: false }, // ← Naya File Field
       { key: 'fullName', label: 'Full Name', type: 'text', required: true },
       { key: 'email', label: 'Email', type: 'email', required: true },
       { key: 'rollNo', label: 'Roll No', type: 'text', required: true },
@@ -83,13 +85,13 @@ export class Student implements OnInit {
 
   openAdd() {
     this.isEdit.set(false);
-    this.editModel.set({});
+    this.editModel.set({ imageFile: null });
     this.formVisible.set(true);
   }
 
   openEdit(student: StudentModel) {
     this.isEdit.set(true);
-    this.editModel.set({ ...student });
+    this.editModel.set({ ...student, imageFile: null });
     this.formVisible.set(true);
   }
 

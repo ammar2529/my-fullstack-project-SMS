@@ -26,4 +26,8 @@ export const routes: Routes = [
     path: '**',
     redirectTo: 'auth/login',
   },
+  {
+    path: '**',
+    loadComponent: () => import('./features/not-found/not-found').then((m) => m.NotFound),
+  },
 ];

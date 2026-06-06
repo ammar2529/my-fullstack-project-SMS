@@ -1,4 +1,5 @@
-.fee-payment-page {
+.fee-payment-page
+{
   .page-header {
     display: flex;
     align-items: center;
@@ -202,6 +203,48 @@
         transform: none;
         box-shadow: none;
       }
+    }
+  }
+
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1040; backdrop-filter: blur(2px);
+  }
+
+  .receipt-modal {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff; border-radius: 16px;
+    width: 90%; max-width: 500px;
+    max-height: 90vh; overflow-y: auto;
+    z-index: 1050; padding: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+
+    .receipt-header { text-align: center; margin-bottom: 14px;
+      border-bottom: 2px solid #1e3a5f; padding-bottom: 10px;
+      h2 { color: #1e3a5f; font-size: 1.1rem; font-weight: 700; }
+      p  { color: #666; font-size: 0.8rem; }
+    }
+    .receipt-no { background: #1e3a5f; color: #fff; text-align: center;
+      padding: 8px; border-radius: 6px; margin: 10px 0; font-weight: bold; font-size: 0.9rem;
+    }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0;
+      .info-item { border: 1px solid #eee; padding: 8px; border-radius: 6px;
+        .info-label { font-size: 0.7rem; color: #888; text-transform: uppercase; }
+        .info-value { font-weight: 600; color: #333; font-size: 0.88rem; }
+      }
+    }
+    .fee-table { width: 100%; border-collapse: collapse; margin: 10px 0;
+      th { background: #1e3a5f; color: #fff; padding: 8px 10px; font-size: 0.82rem; }
+      td { padding: 8px 10px; border-bottom: 1px solid #eee; font-size: 0.85rem; }
+      .total-row td { font-weight: bold; background: #f8f9fa; }
+    }
+    .status-paid    { color: #27ae60; font-weight: bold; }
+    .status-pending { color: #f39c12; font-weight: bold; }
+    .footer { display: flex; justify-content: space-between; margin-top: 20px;
+      .sig { border-top: 1px solid #333; width: 140px; text-align: center;
+        padding-top: 6px; font-size: 0.75rem; color: #666; }
     }
   }
 }

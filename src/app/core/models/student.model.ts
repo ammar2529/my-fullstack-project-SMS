@@ -11,6 +11,7 @@ export interface Student {
   dob: string;
   admissionDate: string;
   isActive: boolean;
+  profilePicture?: string;
 }
 
 export interface CreateStudentDto {
@@ -23,4 +24,17 @@ export interface CreateStudentDto {
   phoneNo: string;
   address: string;
   dob: string;
+  imageFile?: File | null;
+}
+export interface UpdateStudentDto {
+  id: number;
+  fullName: string;
+  email: string;
+  rollNo: string;
+  classId: number;
+  fatherName: string;
+  phoneNo: string;
+  address: string;
+  dob: string;
+  imageFile?: File | null; // ← Update ke waqt agar image change karni ho
 }

@@ -42,6 +42,15 @@
                 [(ngModel)]="formData[field.key]"
                 [name]="field.key"
                 [required]="field.required || false" />}
+            @else if (field.type === 'file') {
+              <input
+                class="form-control"
+                type="file"
+                accept="image/*"
+                (change)="onFileChange($event, field.key)"
+                [name]="field.key"
+                [required]="field.required || false" />
+            }
             @else {
               <input
                 class="form-control"

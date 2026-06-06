@@ -95,6 +95,7 @@
           <th width="15%">Collected Amount</th>
           <th width="15%">Method</th>
           <th width="15%" class="text-center">Status Indicator</th>
+          <th width="10%" class="text-center">Receipt</th>
         </tr>
         </thead>
         <tbody>
@@ -130,10 +131,105 @@
                   <span class="status-badge bg-unpaid"><i class="bi bi-x-circle"></i>Unpaid</span>
                 }
               </td>
+              <td class="text-center">
+                @if (row.paymentId) {
+                  <button class="btn btn-sm btn-outline-info"
+                          (click)="viewReceipt(row.paymentId)">
+                    <i class="bi bi-receipt"></i>
+                  </button>
+                }
+              </td>
             </tr>
           }
         </tbody>
       </table>
+
+      <!-- Receipt Modal — table ke baad add karo -->
+      @if (receiptVisible() && receiptData()) {
+        <div class="modal-backdrop" (click)="receiptVisible.set(false)"></div>
+        <div class="receipt-modal">
+
+          <div class="receipt-actions no-print d-flex gap-2 mb-3">
+            <button class="btn btn-primary" (click)="printReceipt()">
+              <i class="bi bi-printer me-2"></i>Print Receipt
+            </button>
+            <button class="btn btn-light" (click)="receiptVisible.set(false)">Close</button>
+          </div>
+
+          <div id="receiptSection">
+            <div class="receipt-header">
+              <h2>{{ receiptData().schoolName }}</h2>
+              <p>{{ receiptData().schoolAddress }}</p>
+              <p>Fee Payment Receipt</p>
+            </div>
+
+            <div class="receipt-no">Receipt No: {{ receiptData().receiptNo }}</div>
+
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Student Name</div>
+                <div class="info-value">{{ receiptData().studentName }}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Roll No</div>
+                <div class="info-value">{{ receiptData().rollNo }}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Class</div>
+                <div class="info-value">{{ receiptData().className }}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Month</div>
+                <div class="info-value">{{ receiptData().month }}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Payment Date</div>
+                <div class="info-value">{{ receiptData().paymentDate | date:'dd MMM yyyy' }}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Payment Method</div>
+                <div class="info-value">{{ receiptData().paymentMethod }}</div>
+              </div>
+            </div>
+
+            <table class="fee-table">
+              <thead>
+              <tr>
+                <th>Description</th>
+                <th class="text-end">Amount</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>{{ receiptData().feeType }}</td>
+                <td class="text-end">Rs. {{ receiptData().totalAmount | number }}</td>
+              </tr>
+              <tr class="total-row">
+                <td>Amount Paid</td>
+                <td class="text-end text-success">Rs. {{ receiptData().amountPaid | number }}</td>
+              </tr>
+                @if (receiptData().balance > 0) {
+                  <tr class="total-row">
+                    <td>Balance Due</td>
+                    <td class="text-end text-danger">Rs. {{ receiptData().balance | number }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            <div class="text-center mb-3">
+        <span [class]="receiptData().status === 'Paid' ? 'status-paid' : 'status-pending'">
+          Status: {{ receiptData().status }}
+        </span>
+            </div>
+
+            <div class="footer">
+              <div class="sig">Received By</div>
+              <div class="sig">{{ receiptData().principal || 'Principal' }}</div>
+            </div>
+          </div>
+        </div>
+      }
     </div>
 
     <div class="save-bar">

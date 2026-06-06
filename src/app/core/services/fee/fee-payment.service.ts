@@ -38,9 +38,16 @@ export class FeePaymentService {
   }
 
   /**
-   * Poori modified sheet ko aik sath server par save/update karne ke liye
    */
   saveBulkFees(payload: any[]): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/bulk-save`, payload);
+  }
+
+  getReceipt(paymentId: number): Observable<ApiResponse<any>> {
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/${paymentId}/receipt`);
+  }
+
+  getMonthlySummary(month: string): Observable<ApiResponse<any>> {
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/monthly-summary?month=${month}`);
   }
 }

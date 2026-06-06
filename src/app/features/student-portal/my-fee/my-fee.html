@@ -1,0 +1,156 @@
+<div class="portal-page">
+  <div class="page-header">
+    <h4>My Fee History</h4>
+    <p class="text-muted">View your fee payments and receipts</p>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-4">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  }
+
+  @if (!loading() && summary()) {
+    <!-- Summary -->
+    <div class="att-stats mb-4">
+      <div class="att-stat blue">
+        <i class="bi bi-receipt"></i>
+        <div><h3>{{ summary().count }}</h3><p>Total Payments</p></div>
+      </div>
+      <div class="att-stat green">
+        <i class="bi bi-check-circle-fill"></i>
+        <div><h3>{{ summary().paid }}</h3><p>Paid</p></div>
+      </div>
+      <div class="att-stat orange">
+        <i class="bi bi-clock-fill"></i>
+        <div><h3>{{ summary().pending }}</h3><p>Pending</p></div>
+      </div>
+      <div class="att-stat purple">
+        <i class="bi bi-cash-stack"></i>
+        <div><h3>Rs. {{ summary().total | number }}</h3><p>Total Paid</p></div>
+      </div>
+    </div>
+
+    <!-- History Table -->
+    <div class="att-table">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Month</th>
+          <th>Fee Type</th>
+          <th>Amount</th>
+          <th>Method</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Receipt</th>
+        </tr>
+        </thead>
+        <tbody>
+          @if (history().length === 0) {
+            <tr>
+              <td colspan="8" class="text-center py-4 text-muted">
+                No payment history found
+              </td>
+            </tr>
+          }
+          @for (p of history(); track p.id; let i = $index) {
+            <tr>
+              <td>{{ i + 1 }}</td>
+              <td>{{ p.month }}</td>
+              <td>{{ p.feeType }}</td>
+              <td class="fw-semibold">Rs. {{ p.amountPaid | number }}</td>
+              <td>{{ p.paymentMethod }}</td>
+              <td>{{ p.paymentDate | date:'dd MMM yyyy' }}</td>
+              <td>
+                <span class="status-badge" [class]="getStatusClass(p.status)">
+                  {{ p.status }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary"
+                        (click)="viewReceipt(p.id)">
+                  <i class="bi bi-receipt"></i>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Receipt Modal -->
+  @if (receiptVisible() && receiptData()) {
+    <div class="modal-backdrop" (click)="receiptVisible.set(false)"></div>
+    <div class="receipt-modal">
+      <div class="d-flex gap-2 mb-3">
+        <button class="btn btn-primary" (click)="printReceipt()">
+          <i class="bi bi-printer me-2"></i>Print
+        </button>
+        <button class="btn btn-light" (click)="receiptVisible.set(false)">Close</button>
+      </div>
+
+      <div id="myReceiptSection">
+        <div class="receipt-header">
+          <h2>{{ receiptData().schoolName }}</h2>
+          <p>{{ receiptData().schoolAddress }}</p>
+          <p>Fee Payment Receipt</p>
+        </div>
+        <div class="receipt-no">Receipt No: {{ receiptData().receiptNo }}</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Student</div>
+            <div class="info-value">{{ receiptData().studentName }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Roll No</div>
+            <div class="info-value">{{ receiptData().rollNo }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Class</div>
+            <div class="info-value">{{ receiptData().className }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Month</div>
+            <div class="info-value">{{ receiptData().month }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Payment Date</div>
+            <div class="info-value">{{ receiptData().paymentDate | date:'dd MMM yyyy' }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Method</div>
+            <div class="info-value">{{ receiptData().paymentMethod }}</div>
+          </div>
+        </div>
+        <table class="fee-table">
+          <thead>
+          <tr><th>Description</th><th class="text-end">Amount</th></tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>{{ receiptData().feeType }}</td>
+            <td class="text-end">Rs. {{ receiptData().totalAmount | number }}</td>
+          </tr>
+          <tr style="font-weight:bold; background:#f8f9fa;">
+            <td>Amount Paid</td>
+            <td class="text-end text-success">Rs. {{ receiptData().amountPaid | number }}</td>
+          </tr>
+            @if (receiptData().balance > 0) {
+              <tr style="font-weight:bold;">
+                <td>Balance Due</td>
+                <td class="text-end text-danger">Rs. {{ receiptData().balance | number }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <div class="text-center">
+          <strong [class]="receiptData().status === 'Paid' ? 'text-success' : 'text-warning'">
+            Status: {{ receiptData().status }}
+          </strong>
+        </div>
+      </div>
+    </div>
+  }
+</div>

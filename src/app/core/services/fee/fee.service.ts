@@ -20,14 +20,14 @@ export class FeeService {
   }
 
   create(dto: any): Observable<ApiResponse<any>> {
-    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/FeeStructures`, dto);
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/FeeStructures/create-fee`, dto);
   }
 
   update(id: number, dto: any): Observable<ApiResponse<any>> {
-    return this.http.put<ApiResponse<any>>(`${this.apiUrl}/FeeStructures/${id}`, dto);
+    return this.http.put<ApiResponse<any>>(`${this.apiUrl}/FeeStructures/update-fee/${id}`, dto);
   }
 
   delete(id: number): Observable<ApiResponse<any>> {
-    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/FeeStructures/${id}`);
+    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/FeeStructures/delete-fee/${id}`);
   }
 }

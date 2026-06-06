@@ -51,7 +51,16 @@
                   @for (item of getValue(row, col.key); track item) {
                     <span class="badge bg-primary me-1 mb-1">{{ item }}</span>
                   }
-                } @else {
+                }
+                @else if (isImagePath(col.key)) {
+                  <div class="table-avatar-zone">
+                    <img
+                      [src]="getStudentImageUrl(getValue(row, col.key))"
+                      class="table-img-preview"
+                      alt="Student" />
+                  </div>
+                }
+                @else {
                   {{ getValue(row, col.key) }}
                 }
               </td>

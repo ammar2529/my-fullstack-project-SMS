@@ -6,7 +6,7 @@ import { RoleConfig } from '../../role-config/role-config';
 export interface FormField {
   key: string;
   label: string;
-  type: 'text' | 'email' | 'number' | 'date' | 'select' | 'textarea' | 'password' | 'time';
+  type: 'text' | 'email' | 'number' | 'date' | 'select' | 'textarea' | 'password' | 'time' | 'file';
   required?: boolean;
   options?: { label: string; value: any }[];
   placeholder?: string;
@@ -49,6 +49,15 @@ export class ReusableForm {
   //   this.onSave.emit(processedData);
   // }
 
+  // File selection ko handle karne ke liye naya function
+  onFileChange(event: any, key: string) {
+    const file = event.target.files[0];
+    if (file) {
+      this.formData[key] = file; // Direct file object ko model mein set kiya
+    } else {
+      this.formData[key] = null;
+    }
+  }
   save() {
     const processedData = { ...this.formData };
     this.fields().forEach((field) => {

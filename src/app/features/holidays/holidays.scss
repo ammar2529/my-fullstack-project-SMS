@@ -1,0 +1,80 @@
+.holidays-page {
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    h4 { font-weight: 700; color: #1e3a5f; margin: 0; }
+    .btn-primary {
+      background: linear-gradient(135deg, #1e3a5f, #2980b9);
+      border: none; border-radius: 8px; padding: 9px 20px; font-weight: 600;
+    }
+  }
+
+  .filter-bar {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+    .filter-chip {
+      padding: 6px 16px; border: 1px solid #e0e0e0; border-radius: 20px;
+      background: #fff; color: #666; cursor: pointer; font-size: 0.85rem;
+      transition: all 0.2s;
+      &:hover { border-color: #2980b9; color: #2980b9; }
+      &.active { background: #1e3a5f; color: #fff; border-color: #1e3a5f; }
+    }
+  }
+
+  .empty-state {
+    text-align: center; padding: 60px; background: #fff;
+    border-radius: 14px; color: #aaa;
+    i { font-size: 3rem; display: block; margin-bottom: 12px; }
+  }
+
+  .holidays-grid {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+
+  .holiday-card {
+    background: #fff; border-radius: 14px;
+    display: flex; align-items: stretch;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden; transition: all 0.2s;
+
+    &:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+    &.upcoming { border: 1px solid #e8f4fd; }
+
+    .card-left {
+      width: 80px; flex-shrink: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 6px; padding: 12px 8px; color: #fff;
+      .type-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; text-align: center; }
+      .duration   { font-size: 1.1rem; font-weight: 700; }
+    }
+
+    .card-body {
+      flex: 1; padding: 14px 16px;
+      .card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+        h6 { margin: 0; font-weight: 700; color: #1e3a5f; font-size: 0.95rem; }
+      }
+      .upcoming-badge {
+        background: #e8f4fd; color: #2980b9; padding: 2px 8px;
+        border-radius: 10px; font-size: 0.72rem; font-weight: 600;
+      }
+      .date-row { font-size: 0.82rem; color: #888; margin-bottom: 4px;
+        i { color: #2980b9; }
+      }
+      .desc { font-size: 0.8rem; color: #666; margin: 0; }
+    }
+
+    .card-actions {
+      display: flex; flex-direction: column; gap: 6px;
+      padding: 12px; justify-content: center;
+      button {
+        width: 30px; height: 30px; border-radius: 8px; border: none;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        font-size: 0.8rem; transition: all 0.2s;
+        &:first-child { background: #e8f4fd; color: #2980b9;
+          &:hover { background: #2980b9; color: #fff; } }
+        &:last-child  { background: #fef5f5; color: #e74c3c;
+          &:hover { background: #e74c3c; color: #fff; } }
+      }
+    }
+  }
+}

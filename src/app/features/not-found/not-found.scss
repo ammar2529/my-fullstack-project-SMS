@@ -1,0 +1,26 @@
+.not-found {
+  min-height: 100vh; display: flex;
+  align-items: center; justify-content: center;
+  background: #f0f2f5;
+}
+.nf-card {
+  background: #fff; border-radius: 20px; padding: 48px;
+  text-align: center; box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+  max-width: 420px;
+}
+.nf-number {
+  font-size: 5rem; font-weight: 800;
+  background: linear-gradient(135deg, #1e3a5f, #2980b9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+.nf-icon { font-size: 3rem; color: #ccc; display: block; margin: 12px 0; }
+h3 { color: #1e3a5f; font-weight: 700; margin-bottom: 8px; }
+p  { color: #888; margin-bottom: 24px; }
+.btn-primary {
+  background: linear-gradient(135deg, #1e3a5f, #2980b9);
+  border: none; border-radius: 8px; padding: 10px 24px;
+  font-weight: 600; color: #fff; text-decoration: none;
+  display: inline-flex; align-items: center;
+}

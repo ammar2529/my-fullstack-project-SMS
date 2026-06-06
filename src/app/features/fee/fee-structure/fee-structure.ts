@@ -24,58 +24,78 @@ export class FeeStructure {
 
   columns: TableColumn[] = [
     { key: 'feeType', label: 'Fee Type' },
-    { key: 'amount', label: 'Amount', pipe: 'currency' },
-    { key: 'class.className', label: 'Class Name' },
+    { key: 'feeCategory', label: 'Category' },
+    { key: 'className', label: 'Class' },
+    { key: 'amount', label: 'Amount (Rs)' },
+    { key: 'description', label: 'Description' },
   ];
 
-  formFields: FF[] = [
-    {
-      key: 'feeType',
-      label: 'Fee Type',
-      type: 'text',
-      required: true,
-      placeholder: 'e.g., Monthly Fee',
-    },
-    {
-      key: 'amount',
-      label: 'Amount (PKR)',
-      type: 'number',
-      required: true,
-      placeholder: 'e.g., 2500',
-    },
-    { key: 'classId', label: 'Select Class', type: 'select', required: true, options: [] },
-  ];
+  get formFields(): FF[] {
+    return [
+      {
+        key: 'classId',
+        label: 'Class',
+        type: 'select',
+        required: true,
+        options: this.allClasses().map((c) => ({
+          label: `${c.className} - ${c.section}`,
+          value: c.id,
+        })),
+      },
+      {
+        key: 'feeType',
+        label: 'Fee Type',
+        type: 'select',
+        required: true,
+        options: [
+          { label: 'Monthly Fee', value: 'Monthly Fee' },
+          { label: 'Admission Fee', value: 'Admission Fee' },
+          { label: 'Exam Fee', value: 'Exam Fee' },
+          { label: 'Sports Fee', value: 'Sports Fee' },
+          { label: 'Computer Fee', value: 'Computer Fee' },
+          { label: 'Transport Fee', value: 'Transport Fee' },
+          { label: 'Library Fee', value: 'Library Fee' },
+          { label: 'Security Deposit', value: 'Security Deposit' },
+          { label: 'Annual Fund', value: 'Annual Fund' },
+          { label: 'Other', value: 'Other' },
+        ],
+      },
+      {
+        key: 'feeCategory',
+        label: 'Category',
+        type: 'select',
+        required: true,
+        options: [
+          { label: 'Monthly (Every Month)', value: 'Monthly' },
+          { label: 'One Time (Once Only)', value: 'OneTime' },
+          { label: 'Optional (As Needed)', value: 'Optional' },
+        ],
+      },
+      { key: 'amount', label: 'Amount (Rs)', type: 'number', required: true },
+      { key: 'description', label: 'Description', type: 'textarea' },
+    ];
+  }
 
   constructor(
-    private feeStructureService: FeeService,
+    private feeService: FeeService,
     private classService: ClassService,
     private toast: ToastService,
   ) {}
 
   ngOnInit() {
-    debugger;
     this.loadFeeStructures();
     this.loadClasses();
   }
 
   loadClasses() {
     this.classService.getAll().subscribe({
-      next: (res) => {
-        this.allClasses.set(res.data);
-        const classField = this.formFields.find((f) => f.key === 'classId');
-        if (classField) {
-          classField.options = res.data.map((c: any) => ({
-            label: `${c.className} - ${c.section}`,
-            value: c.id,
-          }));
-        }
-      },
+      next: (res) => this.allClasses.set(res.data),
     });
   }
 
   loadFeeStructures() {
     this.loading.set(true);
-    this.feeStructureService.getAll().subscribe({
+    this.feeService.getAll().subscribe({
       next: (res) => {
         this.feeStructures.set(res.data);
         this.loading.set(false);
@@ -89,7 +109,6 @@ export class FeeStructure {
     this.editModel.set({});
     this.formVisible.set(true);
   }
-
   openEdit(fs: any) {
     this.isEdit.set(true);
     this.editModel.set({ ...fs });
@@ -97,11 +116,11 @@ export class FeeStructure {
   }
 
   onDelete(fs: any) {
-    if (confirm(`Delete fee structure for ${fs.feeType}?`)) {
-      this.feeStructureService.delete(fs.id).subscribe({
+    if (confirm(`Delete "${fs.feeType}"?`)) {
+      this.feeService.delete(fs.id).subscribe({
         next: () => {
           this.loadFeeStructures();
-          this.toast.success('Fee structure deleted!');
+          this.toast.success('Deleted!');
         },
         error: () => this.toast.error('Delete failed!'),
       });
@@ -111,19 +130,18 @@ export class FeeStructure {
   onSave(data: any) {
     this.formLoading.set(true);
     const call = this.isEdit()
-      ? this.feeStructureService.update(data.id, data)
-      : this.feeStructureService.create(data);
-
+      ? this.feeService.update(data.id, data)
+      : this.feeService.create(data);
     call.subscribe({
       next: () => {
         this.formLoading.set(false);
         this.formVisible.set(false);
         this.loadFeeStructures();
-        this.toast.success(this.isEdit() ? 'Fee structure updated!' : 'Fee structure added!');
+        this.toast.success(this.isEdit() ? 'Updated!' : 'Fee type added!');
       },
       error: () => {
         this.formLoading.set(false);
-        this.toast.error('Something went wrong!');
+        this.toast.error('Error!');
       },
     });
   }

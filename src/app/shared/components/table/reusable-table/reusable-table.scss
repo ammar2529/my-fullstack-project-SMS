@@ -67,3 +67,20 @@
     align-items: flex-start;
   }
 }
+// Purane CSS ke aakhir mein yeh add karein:
+
+.table-avatar-zone {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.table-img-preview {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  background-color: #f8f9fa;
+}
